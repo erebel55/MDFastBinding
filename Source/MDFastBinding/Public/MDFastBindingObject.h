@@ -10,18 +10,18 @@
 class UMDFastBindingValueBase;
 class UMDFastBindingInstance;
 
-
+// Determines both whether nodes should tick the binding and when to fetch new values
 UENUM()
 enum class EMDFastBindingUpdateType
 {
-	// Will always grab the latest value, regardless if inputs have changed
+	// Will always grab the latest value, regardless if inputs have changed. Causes the node to tick.
 	Always,
-	// Will only grab the latest value is any of the inputs have changed.
-	// Some values treat this as "Always" (eg. Value_Property) since the only way to know if it changed is to get the value.
+	// Will only grab the latest value is any of the inputs have changed. Does not cause the node to tick.
+	// Some values treat this as "Always" (eg. Value_Property) since the only way to know if it changed is to get the value. Even in that case, it will not cause the node to tick.
 	IfUpdatesNeeded,
-	// User's cannot select EventBased, it is determined by the nature of the binding object (eg. FieldNotify properties)
+	// User's cannot select EventBased, it is determined by the nature of the binding object (eg. FieldNotify properties). Does not cause the node to tick.
 	EventBased UMETA(Hidden),
-	// Will grab the latest value until it's successful, then reuses that value in future updates
+	// Will attempt to grab the latest value until it's successful, then reuses that value in future updates. Prevents ticking, even if inputs tick.
 	Once
 };
 
@@ -131,6 +131,9 @@ public:
 
 	void RemoveExtendablePinBindingItem(int32 ItemIndex);
 
+	virtual bool HasRunSuccessfully() const PURE_VIRTUAL(UMDFastBindingObject::HasRunSuccessfully, return false;);
+
+	// Indicate that an EventBased node needs to update
 	void MarkObjectDirty();
 	void MarkObjectClean();
 
@@ -164,6 +167,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = "Debug", AdvancedDisplay)
 	FGuid BindingObjectIdentifier;
+
+	UPROPERTY(Transient)
+	double LastTimeNodeRan = 0.0;
 
 	virtual FText GetDisplayName();
 	virtual FText GetToolTipText();

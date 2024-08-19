@@ -16,7 +16,7 @@ bool FMDFastBindingFunctionWrapper::BuildFunctionData()
 {
 	FixupFunctionMember();
 
-	FunctionPtr = FunctionMember.ResolveMember<UFunction>();
+	FunctionPtr = FunctionMember.ResolveMember<UFunction>(GetFunctionOwnerClass());
 	if (FunctionPtr != nullptr)
 	{
 		FMDFastBindingHelpers::SplitFunctionParamsAndReturnProp(FunctionPtr, Params, ReturnProp);
@@ -138,7 +138,7 @@ FString FMDFastBindingFunctionWrapper::FunctionToString_Internal(UFunction* Func
 		}
 	}
 
-	const FProperty* ReturnPropPtr = ReturnProp.Get(); 
+	const FProperty* ReturnPropPtr = ReturnProp.Get();
 	const FString ReturnString = ReturnPropPtr != nullptr ? FMDFastBindingHelpers::PropertyToString(*ReturnPropPtr) : TEXT("void");
 
 	return FString::Printf(TEXT("%s %s(%s)"), *ReturnString, *Func->GetFName().ToString(), *ParamString);
@@ -166,7 +166,7 @@ bool FMDFastBindingFunctionWrapper::ShouldRebuildFunctionData() const
 #if WITH_EDITORONLY_DATA
 	return !LastFrameFunctionUpdated.IsSet()
 	|| LastFrameFunctionUpdated.GetValue() != GFrameCounter
-	|| FunctionMember.ResolveMember<UFunction>() != FunctionPtr;
+	|| FunctionMember.ResolveMember<UFunction>(GetFunctionOwnerClass()) != FunctionPtr;
 #else
 	return FunctionPtr == nullptr;
 #endif
@@ -216,7 +216,7 @@ void FMDFastBindingFunctionWrapper::FixupFunctionMember()
 			if (UFunction* Func = OwnerClass->FindFunctionByName(FunctionName))
 			{
 				FunctionName = NAME_None;
-				FunctionMember.SetFromField<UFunction>(Func, false);
+				FunctionMember.SetFromField<UFunction>(Func, true, OwnerClass);
 				FunctionMember.bIsFunction = true;
 			}
 		}
@@ -229,7 +229,7 @@ void FMDFastBindingFunctionWrapper::FixupFunctionMember()
 void FMDFastBindingFunctionWrapper::RefreshCachedProperties()
 {
 	CachedParams.Reset(Params.Num());
-	
+
 	for (const TWeakFieldPtr<const FProperty>& WeakParam : Params)
 	{
 		if (const FProperty* Param = WeakParam.Get())

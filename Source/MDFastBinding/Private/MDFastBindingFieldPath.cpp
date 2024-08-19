@@ -14,20 +14,20 @@ bool FMDFastBindingFieldPath::BuildPath()
 
 	CachedPath.Empty(FieldPathMembers.Num());
 
-	if (const UStruct* OwnerStruct = GetPathOwnerStruct())
+	if (UStruct* OwnerStruct = GetPathOwnerStruct())
 	{
 		for (const FMDFastBindingMemberReference& FieldPathMember : FieldPathMembers)
 		{
 			TWeakFieldPtr<const FProperty> NextProp = nullptr;
 			if (FieldPathMember.bIsFunction)
 			{
-				UFunction* Func = FieldPathMember.ResolveMember<UFunction>();
+				UFunction* Func = FieldPathMember.ResolveMember<UFunction>(Cast<UClass>(OwnerStruct));
 				CachedPath.Add(Func);
 
 				TArray<TWeakFieldPtr<const FProperty>> Params;
 				FMDFastBindingHelpers::SplitFunctionParamsAndReturnProp(Func, Params, NextProp);
 			}
-			else if (const FProperty* Prop = FieldPathMember.ResolveMember<FProperty>())
+			else if (const FProperty* Prop = FieldPathMember.ResolveMember<FProperty>(Cast<UClass>(OwnerStruct)))
 			{
 				NextProp = Prop;
 				CachedPath.Add(Prop);
@@ -86,8 +86,18 @@ TArray<FFieldVariant> FMDFastBindingFieldPath::GetFieldPath()
 const TArray<FMDFastBindingWeakFieldVariant>& FMDFastBindingFieldPath::GetWeakFieldPath()
 {
 #if WITH_EDITORONLY_DATA
+	// In the editor, the fields can go invalid when changing the underlying class
+	bool bIsCacheValid = true;
+	for (const FMDFastBindingWeakFieldVariant& Field : CachedPath)
+	{
+		if (!Field.IsFieldValid())
+		{
+			bIsCacheValid = false;
+			break;
+		}
+	}
 	// Only cached once per frame, since the user could change the path
-	if (!LastFrameUpdatedPath.IsSet() || LastFrameUpdatedPath.GetValue() != GFrameCounter)
+	if (!bIsCacheValid || !LastFrameUpdatedPath.IsSet() || LastFrameUpdatedPath.GetValue() != GFrameCounter)
 #else
 	if (CachedPath.Num() == 0)
 #endif
@@ -546,12 +556,12 @@ void FMDFastBindingFieldPath::FixupFieldPath()
 			TWeakFieldPtr<const FProperty> NextProp = nullptr;
 			if (PathMember.bIsFunction)
 			{
-				const UFunction* Func = PathMember.ResolveMember<UFunction>();
+				const UFunction* Func = PathMember.ResolveMember<UFunction>(Cast<UClass>(OwnerStruct));
 
 				TArray<TWeakFieldPtr<const FProperty>> Params;
 				FMDFastBindingHelpers::SplitFunctionParamsAndReturnProp(Func, Params, NextProp);
 			}
-			else if (const FProperty* Prop = PathMember.ResolveMember<FProperty>())
+			else if (const FProperty* Prop = PathMember.ResolveMember<FProperty>(Cast<UClass>(OwnerStruct)))
 			{
 				NextProp = Prop;
 			}

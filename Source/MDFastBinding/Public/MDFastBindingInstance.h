@@ -27,13 +27,13 @@ public:
 
 	UMDFastBindingDestinationBase* GetBindingDestination() const { return BindingDestination; }
 
-	bool ShouldBindingTick() const;
-
+	// Force the binding to update on the next tick
 	void MarkBindingDirty();
 
 #if WITH_EDITOR
 	virtual EDataValidationResult IsDataValid(TArray<FText>& ValidationErrors) override;
 	virtual void PreSave(FObjectPreSaveContext SaveContext) override;
+	virtual void PostDuplicate(EDuplicateMode::Type DuplicateMode) override;
 
 	void OnVariableRenamed(UClass* VariableClass, const FName& OldVariableName, const FName& NewVariableName);
 
@@ -79,7 +79,6 @@ protected:
 	UMDFastBindingDestinationBase* BindingDestination = nullptr;
 
 private:
-	// Default to true so that bindings saved before this was added are properly checked in ShouldBindingTick()
 	UPROPERTY()
-	bool bIsBindingPerformant = true;
+	bool bIsBindingPerformant = false;
 };

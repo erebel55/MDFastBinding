@@ -23,14 +23,15 @@ public:
 #if WITH_EDITOR
 	TTuple<const FProperty*, void*> GetCachedValue() const { return CachedValue; }
 #endif
+	bool HasCachedValue() const { return CachedValue.Value != nullptr; }
 
 	virtual const FProperty* GetOutputProperty() { PURE_VIRTUAL(UMDFastBindingValueBase::GetValue, return nullptr;) }
+
+	virtual bool HasRunSuccessfully() const override { return HasCachedValue(); }
 
 	const FMDFastBindingItem* GetOwningBindingItem() const;
 
 protected:
-	virtual bool CheckNeedsUpdate() const override;
-
 	virtual void InitializeValue_Internal(UObject* SourceObject) {}
 	virtual TTuple<const FProperty*, void*> GetValue_Internal(UObject* SourceObject) { PURE_VIRTUAL(UMDFastBindingValueBase::GetValue, return {};) }
 	virtual void TerminateValue_Internal(UObject* SourceObject) {}

@@ -63,7 +63,7 @@ namespace MDFastBindingPropertyBinding
 		TArray<FFieldVariant> Result;
 
 		bool bIsValid = false;
-		for (FFieldVariant Iter(Property); Iter.IsValid(); Iter = Iter.GetOwnerVariant())
+		for (FFieldVariant Iter(Property); IsValid(Iter.Get<UClass>()); Iter = Iter.GetOwnerVariant())
 		{
 			if (Widget->IsA(Iter.Get<UClass>()))
 			{
@@ -162,7 +162,7 @@ namespace MDFastBindingPropertyBinding
 			check(SetterFunction);
 
 			auto* FunctionDestination = Cast<UMDFastBindingDestination_Function>(Binding->SetDestination(UMDFastBindingDestination_Function::StaticClass()));
-			FunctionDestination->SetFunction(SetterFunction);
+			FunctionDestination->SetFunction(SetterFunction, Widget->GetClass());
 			DestinationNode = FunctionDestination;
 			WidgetPinName = TEXT("Function Owner");
 		}

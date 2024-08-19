@@ -2,6 +2,7 @@
 
 #include "MDFastBindingInstance.h"
 #include "BindingValues/MDFastBindingValueBase.h"
+#include "Misc/App.h"
 
 void UMDFastBindingDestinationBase::InitializeDestination(UObject* SourceObject)
 {
@@ -9,11 +10,17 @@ void UMDFastBindingDestinationBase::InitializeDestination(UObject* SourceObject)
 	TRACE_CPUPROFILER_EVENT_SCOPE_TEXT(*GetName());
 	InitializeDestination_Internal(SourceObject);
 
-	for (const FMDFastBindingItem& BindingItem : BindingItems)
+	for (FMDFastBindingItem& BindingItem : BindingItems)
 	{
 		if (BindingItem.Value != nullptr)
 		{
 			BindingItem.Value->InitializeValue(SourceObject);
+		}
+		else
+		{
+			// Cache default values on initializations
+			bool bDidUpdate = false;
+			BindingItem.GetValue(SourceObject, bDidUpdate);
 		}
 	}
 }
@@ -24,6 +31,9 @@ void UMDFastBindingDestinationBase::UpdateDestination(UObject* SourceObject)
 	TRACE_CPUPROFILER_EVENT_SCOPE_TEXT(*GetName());
 	if (CheckCachedNeedsUpdate())
 	{
+#if WITH_EDITORONLY_DATA
+		LastTimeNodeRan = FApp::GetCurrentTime();
+#endif
 		UpdateDestination_Internal(SourceObject);
 	}
 }
@@ -41,11 +51,6 @@ void UMDFastBindingDestinationBase::TerminateDestination(UObject* SourceObject)
 			BindingItem.Value->TerminateValue(SourceObject);
 		}
 	}
-}
-
-bool UMDFastBindingDestinationBase::CheckNeedsUpdate() const
-{
-	return !bHasEverUpdated || Super::CheckNeedsUpdate();
 }
 
 void UMDFastBindingDestinationBase::MarkAsHasEverUpdated()

@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "Containers/Union.h"
 #include "MDFastBindingMemberReference.h"
 #include "FieldNotificationId.h"
 #include "UObject/UnrealType.h"
@@ -16,43 +17,57 @@ struct FMDFastBindingWeakFieldVariant
 {
 public:
 	FMDFastBindingWeakFieldVariant(const FField* InField)
-		: FieldVariant(InField)
-		, FieldCanary(InField ? InField->GetOwnerUObject() : nullptr)
+		: WeakField(InField)
 	{
 	}
 
 	FMDFastBindingWeakFieldVariant(UField* InField)
-		: FieldVariant(InField)
-		, FieldCanary(InField)
+		: WeakField(InField)
 	{
 	}
 
 	bool IsFieldValid() const
 	{
-		return FieldCanary.IsValid();
+		if (WeakField.HasSubtype<TWeakFieldPtr<const FField>>())
+		{
+			return WeakField.GetSubtype<TWeakFieldPtr<const FField>>().IsValid();
+		}
+
+		if (WeakField.HasSubtype<TWeakObjectPtr<UField>>())
+		{
+			return WeakField.GetSubtype<TWeakObjectPtr<UField>>().IsValid();
+		}
+
+		return false;
 	}
 
-	FField* ToField() const
+	const FField* ToField() const
 	{
-		return IsFieldValid() ? FieldVariant.ToField() : nullptr;
+		return WeakField.HasSubtype<TWeakFieldPtr<const FField>>() ? WeakField.GetSubtype<TWeakFieldPtr<const FField>>().Get() : nullptr;
 	}
 
 	UObject* ToUObject() const
 	{
-		return IsFieldValid() ? FieldVariant.ToUObject() : nullptr;
+		return WeakField.HasSubtype<TWeakObjectPtr<UField>>() ? WeakField.GetSubtype<TWeakObjectPtr<UField>>().Get() : nullptr;
 	}
 
-	const FFieldVariant& GetFieldVariant() const
+	FFieldVariant GetFieldVariant() const
 	{
-		static FFieldVariant InvalidField = {};
-		return IsFieldValid() ? FieldVariant : InvalidField;
+		if (WeakField.HasSubtype<TWeakFieldPtr<const FField>>())
+		{
+			return FFieldVariant(WeakField.GetSubtype<TWeakFieldPtr<const FField>>().Get());
+		}
+
+		if (WeakField.HasSubtype<TWeakObjectPtr<UField>>())
+		{
+			return FFieldVariant(WeakField.GetSubtype<TWeakObjectPtr<UField>>().Get());
+		}
+
+		return {};
 	}
 
 private:
-	FFieldVariant FieldVariant;
-
-	// Either the field itself or the FField owner, if it's invalid then our field is invalid
-	TWeakObjectPtr<UObject> FieldCanary;
+	TUnion<TWeakObjectPtr<UField>, TWeakFieldPtr<const FField>> WeakField;
 };
 
 /**

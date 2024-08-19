@@ -169,7 +169,7 @@ void UMDFastBindingValue_Function::PostInitProperties()
 
 bool UMDFastBindingValue_Function::ShouldCallFunction()
 {
-	return UpdateType != EMDFastBindingUpdateType::IfUpdatesNeeded || bNeedsUpdate;
+	return UpdateType != EMDFastBindingUpdateType::IfUpdatesNeeded || bNeedsUpdate || !HasCachedValue();
 }
 
 #if WITH_EDITOR

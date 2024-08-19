@@ -121,12 +121,9 @@ void UMDFastBindingDestination_Function::PostInitProperties()
 
 bool UMDFastBindingDestination_Function::ShouldCallFunction()
 {
-	const bool bResult = UpdateType != EMDFastBindingUpdateType::IfUpdatesNeeded || bNeedsUpdate;
+	const bool bResult = UpdateType != EMDFastBindingUpdateType::IfUpdatesNeeded || bNeedsUpdate || !HasEverUpdated();
 
-	if (bResult)
-	{
-		MarkAsHasEverUpdated();
-	}
+	MarkAsHasEverUpdated();
 
 	return bResult;
 }
@@ -180,10 +177,10 @@ UFunction* UMDFastBindingDestination_Function::GetFunction()
 	return Function.GetFunctionPtr();
 }
 
-void UMDFastBindingDestination_Function::SetFunction(UFunction* Func)
+void UMDFastBindingDestination_Function::SetFunction(UFunction* Func, UClass* Scope)
 {
 	Function.FunctionMember.bIsFunction = true;
-	Function.FunctionMember.SetFromField<UFunction>(Func, false);
+	Function.FunctionMember.SetFromField<UFunction>(Func, IsValid(Scope), Scope);
 }
 #endif
 

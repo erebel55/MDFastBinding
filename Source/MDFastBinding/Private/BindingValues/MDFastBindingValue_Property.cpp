@@ -11,7 +11,7 @@ namespace MDFastBindingValue_Property_Private
 
 UMDFastBindingValue_Property::UMDFastBindingValue_Property()
 {
-	// Make the default match behaviour since the property value could have changed, we ignore EMDFastBindingUpdateType::IfUpdatesNeeded
+	// Make the default match UMG Binding behaviour since the property value could have changed
 	UpdateType = EMDFastBindingUpdateType::Always;
 }
 

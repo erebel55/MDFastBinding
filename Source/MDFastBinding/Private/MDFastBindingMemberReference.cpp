@@ -8,8 +8,8 @@ void FMDFastBindingMemberReference::FixUpReference(UClass& OwnerClass) const
 	}
 
 	const bool bIsValid = bIsFunction
-		? IsValid(ResolveMember<UFunction>(nullptr, true))
-		: (ResolveMember<FProperty>(nullptr, true) != nullptr);
+		? IsValid(ResolveMember<UFunction>(&OwnerClass, true))
+		: (ResolveMember<FProperty>(&OwnerClass, true) != nullptr);
 
 #if WITH_EDITOR
 	UClass* EffectiveClass = OwnerClass.GetAuthoritativeClass();

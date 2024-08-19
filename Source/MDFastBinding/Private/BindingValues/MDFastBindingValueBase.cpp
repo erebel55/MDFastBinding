@@ -1,10 +1,12 @@
 ﻿#include "BindingValues/MDFastBindingValueBase.h"
 
+#include "Misc/App.h"
+
 void UMDFastBindingValueBase::BeginDestroy()
 {
 	Super::BeginDestroy();
 
-	if (CachedValue.Value != nullptr)
+	if (HasCachedValue())
 	{
 		FMemory::Free(CachedValue.Value);
 		CachedValue.Value = nullptr;
@@ -15,11 +17,17 @@ void UMDFastBindingValueBase::InitializeValue(UObject* SourceObject)
 {
 	SetupBindingItems_Internal();
 
-	for (const FMDFastBindingItem& BindingItem : BindingItems)
+	for (FMDFastBindingItem& BindingItem : BindingItems)
 	{
 		if (BindingItem.Value != nullptr)
 		{
 			BindingItem.Value->InitializeValue(SourceObject);
+		}
+		else
+		{
+			// Cache default values on initializations
+			bool bDidUpdate = false;
+			BindingItem.GetValue(SourceObject, bDidUpdate);
 		}
 	}
 
@@ -48,6 +56,9 @@ TTuple<const FProperty*, void*> UMDFastBindingValueBase::GetValue(UObject* Sourc
 
 	if (CheckCachedNeedsUpdate())
 	{
+#if WITH_EDITORONLY_DATA
+		LastTimeNodeRan = FApp::GetCurrentTime();
+#endif
 		const TTuple<const FProperty*, void*> Value = GetValue_Internal(SourceObject);
 		if (Value.Key == nullptr || Value.Value == nullptr)
 		{
@@ -72,11 +83,6 @@ TTuple<const FProperty*, void*> UMDFastBindingValueBase::GetValue(UObject* Sourc
 	}
 
 	return CachedValue;
-}
-
-bool UMDFastBindingValueBase::CheckNeedsUpdate() const
-{
-	return CachedValue.Value == nullptr || Super::CheckNeedsUpdate();
 }
 
 const FMDFastBindingItem* UMDFastBindingValueBase::GetOwningBindingItem() const

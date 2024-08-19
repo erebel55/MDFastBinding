@@ -261,6 +261,11 @@ UMDFastBindingInstance* UMDFastBindingObject::GetOuterBinding() const
 
 bool UMDFastBindingObject::CheckNeedsUpdate() const
 {
+	if (!HasRunSuccessfully())
+	{
+		return true;
+	}
+
 	if (UpdateType == EMDFastBindingUpdateType::Always)
 	{
 		return true;
@@ -274,18 +279,12 @@ bool UMDFastBindingObject::CheckNeedsUpdate() const
 
 	if (UpdateType == EMDFastBindingUpdateType::Once)
 	{
-		// Assume the child classes check for this
 		return false;
 	}
 
-	// TODO - Optimize - Cache whether downstream items could ever possibly need an update when this object doesn't
 	for (const FMDFastBindingItem& Item : BindingItems)
 	{
 		if (Item.Value != nullptr && Item.Value->CheckCachedNeedsUpdate())
-		{
-			return true;
-		}
-		else if (Item.Value == nullptr && !Item.HasRetrievedDefaultValue())
 		{
 			return true;
 		}

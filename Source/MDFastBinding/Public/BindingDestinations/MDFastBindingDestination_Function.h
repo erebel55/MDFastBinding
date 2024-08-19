@@ -24,7 +24,7 @@ public:
 	virtual void OnVariableRenamed(UClass* VariableClass, const FName& OldVariableName, const FName& NewVariableName) override;
 
 	UFunction* GetFunction();
-	void SetFunction(UFunction* Func);
+	void SetFunction(UFunction* Func, UClass* Scope);
 #endif
 
 #if WITH_EDITORONLY_DATA

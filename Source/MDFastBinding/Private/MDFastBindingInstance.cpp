@@ -50,7 +50,7 @@ bool UMDFastBindingInstance::UpdateBinding(UObject* SourceObject)
 	if (BindingDestination != nullptr)
 	{
 		BindingDestination->UpdateDestination(SourceObject);
-		return ShouldBindingTick();
+		return !bIsBindingPerformant; // Not performant means we have nodes that need to tick
 	}
 
 	return false;
@@ -62,21 +62,6 @@ void UMDFastBindingInstance::TerminateBinding(UObject* SourceObject)
 	{
 		BindingDestination->TerminateDestination(SourceObject);
 	}
-}
-
-bool UMDFastBindingInstance::ShouldBindingTick() const
-{
-	if (!bIsBindingPerformant)
-	{
-		return true;
-	}
-
-	if (BindingDestination != nullptr)
-	{
-		return BindingDestination->CheckCachedNeedsUpdate();
-	}
-
-	return false;
 }
 
 void UMDFastBindingInstance::MarkBindingDirty()
@@ -104,7 +89,15 @@ void UMDFastBindingInstance::PreSave(FObjectPreSaveContext SaveContext)
 {
 	Super::PreSave(SaveContext);
 
-	// Save this off to speed up ShouldBindingTick()
+	// Save this off to speed up UpdateBinding()
+	bIsBindingPerformant = IsBindingPerformant();
+}
+
+void UMDFastBindingInstance::PostDuplicate(EDuplicateMode::Type DuplicateMode)
+{
+	Super::PostDuplicate(DuplicateMode);
+
+	// Update bIsBindingPerformant after compiling (when we get duplicated into the widget class extension) in case things have changed without saving
 	bIsBindingPerformant = IsBindingPerformant();
 }
 
