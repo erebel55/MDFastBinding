@@ -9,7 +9,6 @@
 
 UMDFastBindingValue_FieldNotify::UMDFastBindingValue_FieldNotify()
 {
-	UpdateType = EMDFastBindingUpdateType::EventBased;
 	PropertyPath.bAllowGetterFunctions = true;
 	PropertyPath.bAllowSubProperties = false;
 }
@@ -19,6 +18,9 @@ void UMDFastBindingValue_FieldNotify::PostInitProperties()
 	PropertyPath.FieldFilter.BindUObject(this, &UMDFastBindingValue_FieldNotify::IsValidFieldNotify);
 
 	Super::PostInitProperties();
+
+	// Don't let config overwrite our UpdateType
+	UpdateType = EMDFastBindingUpdateType::EventBased;
 }
 
 #if WITH_EDITOR

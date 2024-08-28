@@ -113,7 +113,7 @@ private:
 /**
  *
  */
-UCLASS()
+UCLASS(Config="MDFastBinding")
 class MDFASTBINDING_API UMDFastBindingObject : public UObject
 {
 	GENERATED_BODY()
@@ -232,7 +232,7 @@ protected:
 	int32 ExtendablePinListCount = 0;
 
 	// Values are cached, this setting determines when to grab a new value or use the cached value
-	UPROPERTY(EditAnywhere, Category = "Performance")
+	UPROPERTY(EditAnywhere, Config, Category = "Performance")
 	EMDFastBindingUpdateType UpdateType = EMDFastBindingUpdateType::IfUpdatesNeeded;
 
 private:

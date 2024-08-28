@@ -11,8 +11,7 @@ namespace MDFastBindingValue_Property_Private
 
 UMDFastBindingValue_Property::UMDFastBindingValue_Property()
 {
-	// Make the default match UMG Binding behaviour since the property value could have changed
-	UpdateType = EMDFastBindingUpdateType::Always;
+
 }
 
 TTuple<const FProperty*, void*> UMDFastBindingValue_Property::GetValue_Internal(UObject* SourceObject)

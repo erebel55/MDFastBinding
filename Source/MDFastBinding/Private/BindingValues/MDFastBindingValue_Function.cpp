@@ -12,8 +12,7 @@ namespace MDFastBindingValue_Function_Private
 
 UMDFastBindingValue_Function::UMDFastBindingValue_Function()
 {
-	// Make the default case more 'correct' since a function _could_ return different results given the same inputs
-	UpdateType = EMDFastBindingUpdateType::Always;
+
 }
 
 TTuple<const FProperty*, void*> UMDFastBindingValue_Function::GetValue_Internal(UObject* SourceObject)
