@@ -318,6 +318,43 @@ void UMDFastBindingGraphSchema::BreakPinLinks(UEdGraphPin& TargetPin, bool bSend
 	}
 }
 
+void UMDFastBindingGraphSchema::BreakSinglePinLink(UEdGraphPin* SourcePin, UEdGraphPin* TargetPin) const
+{
+	if (SourcePin == nullptr || TargetPin == nullptr)
+	{
+		return;
+	}
+
+	auto OrphanValue = [](UMDFastBindingGraphNode* Node, const FName& BindingName)
+	{
+		if (Node == nullptr)
+		{
+			return;
+		}
+
+		if (UMDFastBindingObject* BindingObject = Node->GetBindingObject())
+		{
+			BindingObject->OrphanBindingItem(BindingName);
+		}
+	};
+
+	FScopedTransaction Transaction = FScopedTransaction(LOCTEXT("BreakBindingPinLink", "Break Pin Link"));
+
+	UEdGraphPin* InputPin = TargetPin->Direction == EGPD_Input ? TargetPin : SourcePin;
+	OrphanValue(Cast<UMDFastBindingGraphNode>(InputPin->GetOwningNode()), InputPin->GetFName());
+
+	Super::BreakSinglePinLink(SourcePin, TargetPin);
+
+	if (UEdGraphNode* Node = InputPin->GetOwningNode())
+	{
+		if (UMDFastBindingGraph* Graph = Cast<UMDFastBindingGraph>(Node->GetGraph()))
+		{
+			FBlueprintEditorUtils::MarkBlueprintAsModified(Graph->GetBlueprint());
+			Graph->RefreshGraph();
+		}
+	}
+}
+
 const FPinConnectionResponse UMDFastBindingGraphSchema::CanCreateConnection(const UEdGraphPin* A, const UEdGraphPin* B) const
 {
 	if (A->Direction != B->Direction)
