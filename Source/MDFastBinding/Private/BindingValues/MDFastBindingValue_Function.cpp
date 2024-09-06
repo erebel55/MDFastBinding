@@ -43,6 +43,31 @@ bool UMDFastBindingValue_Function::IsBindingItemWorldContextObject(const FName& 
 	return InItemName == WorldContextMetaValue;
 }
 
+bool UMDFastBindingValue_Function::ShouldAutoCreateBindingItemValue(const FName& InItemName) const
+{
+#if WITH_EDITORONLY_DATA
+	if (const UFunction* Func = const_cast<UMDFastBindingValue_Function*>(this)->GetFunction())
+	{
+		const FString& MetaData = Func->GetMetaData(TEXT("AutoCreateRefTerm"));
+		if (!MetaData.IsEmpty())
+		{
+			TArray<FString> AutoCreateParams;
+			MetaData.ParseIntoArray(AutoCreateParams, TEXT(","), true);
+
+			for (const FString& ParameterName : AutoCreateParams)
+			{
+				if (InItemName == ParameterName.TrimStartAndEnd())
+				{
+					return true;
+				}
+			}
+		}
+	}
+#endif
+
+	return false;
+}
+
 FText UMDFastBindingValue_Function::GetDisplayName()
 {
 	if (const UFunction* Func = Function.GetFunctionPtr())
@@ -148,7 +173,17 @@ void UMDFastBindingValue_Function::SetupBindingItems()
 	for (const FProperty* Param : Params)
 	{
 #if WITH_EDITORONLY_DATA
-		EnsureBindingItemExists(Param->GetFName(), Param, Param->GetToolTipText());
+		const bool bIsOptional = Param != nullptr && ShouldAutoCreateBindingItemValue(Param->GetFName());
+		FMDFastBindingItem& Item = EnsureBindingItemExists(Param->GetFName(), Param, Param->GetToolTipText(), bIsOptional);
+
+		if (bIsOptional && !Item.HasDefaultValue())
+		{
+			void* DefaultValuePtr = FMemory::Malloc(Param->GetSize(), Param->GetMinAlignment());
+			Param->InitializeValue(DefaultValuePtr);
+			Param->ExportText_Direct(Item.DefaultString, DefaultValuePtr, DefaultValuePtr, nullptr, 0);
+
+			FMemory::Free(DefaultValuePtr);
+		}
 #else
 		EnsureBindingItemExists(Param->GetFName(), Param, FText::GetEmpty());
 #endif

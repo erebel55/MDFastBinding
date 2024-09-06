@@ -95,13 +95,22 @@ void UMDFastBindingDestination_Function::SetupBindingItems()
 		, LOCTEXT("PathRootToolTip", "The root object that has the function to call. (Defaults to 'Self').")
 		, true);
 
-
 	for (const FProperty* Param : Params)
 	{
 		if (Param != nullptr)
 		{
 #if WITH_EDITORONLY_DATA
-			EnsureBindingItemExists(Param->GetFName(), Param, Param->GetToolTipText());
+			const bool bIsOptional = Param != nullptr && ShouldAutoCreateBindingItemValue(Param->GetFName());
+			FMDFastBindingItem& Item = EnsureBindingItemExists(Param->GetFName(), Param, Param->GetToolTipText(), bIsOptional);
+
+			if (bIsOptional && !Item.HasDefaultValue())
+			{
+				void* DefaultValuePtr = FMemory::Malloc(Param->GetSize(), Param->GetMinAlignment());
+				Param->InitializeValue(DefaultValuePtr);
+				Param->ExportText_Direct(Item.DefaultString, DefaultValuePtr, DefaultValuePtr, nullptr, 0);
+
+				FMemory::Free(DefaultValuePtr);
+			}
 #else
 			EnsureBindingItemExists(Param->GetFName(), Param, FText::GetEmpty());
 #endif
@@ -143,6 +152,31 @@ bool UMDFastBindingDestination_Function::IsBindingItemWorldContextObject(const F
 	const FName WorldContextMetaValue = IsValid(Func) ? *Func->GetMetaData(TEXT("WorldContext")) : TEXT("");
 
 	return InItemName == WorldContextMetaValue;
+}
+
+bool UMDFastBindingDestination_Function::ShouldAutoCreateBindingItemValue(const FName& InItemName) const
+{
+#if WITH_EDITORONLY_DATA
+	if (const UFunction* Func = const_cast<UMDFastBindingDestination_Function*>(this)->GetFunction())
+	{
+		const FString& MetaData = Func->GetMetaData(TEXT("AutoCreateRefTerm"));
+		if (!MetaData.IsEmpty())
+		{
+			TArray<FString> AutoCreateParams;
+			MetaData.ParseIntoArray(AutoCreateParams, TEXT(","), true);
+
+			for (const FString& ParameterName : AutoCreateParams)
+			{
+				if (InItemName == ParameterName.TrimStartAndEnd())
+				{
+					return true;
+				}
+			}
+		}
+	}
+#endif
+
+	return false;
 }
 #endif
 

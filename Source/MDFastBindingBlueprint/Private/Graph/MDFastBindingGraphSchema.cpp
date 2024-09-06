@@ -546,6 +546,20 @@ void UMDFastBindingGraphSchema::GetGraphDisplayInformation(const UEdGraph& Graph
 
 void UMDFastBindingGraphSchema::TrySetDefaultValue(UEdGraphPin& Pin, const FString& NewDefaultValue, bool bMarkAsModified) const
 {
+	// If setting an AutoCreateRefTerm pin, just defer to the node
+	if (UMDFastBindingGraphNode* Node = Cast<UMDFastBindingGraphNode>(Pin.GetOwningNode()))
+	{
+		if (UMDFastBindingObject* Object = Node->GetBindingObject())
+		{
+			if (Object->ShouldAutoCreateBindingItemValue(Pin.GetFName()))
+			{
+				Pin.DefaultValue = NewDefaultValue;
+				Node->PinDefaultValueChanged(&Pin);
+				return;
+			}
+		}
+	}
+
 	GetDefault<UEdGraphSchema_K2>()->TrySetDefaultValue(Pin, NewDefaultValue, bMarkAsModified);
 }
 

@@ -85,9 +85,14 @@ public:
 		DefaultObject = nullptr;
 	}
 
+	bool HasDefaultValue() const
+	{
+		return DefaultObject != nullptr || !DefaultString.IsEmpty() || !DefaultText.IsEmpty();
+	}
+
 	bool HasValue() const
 	{
-		return Value != nullptr || DefaultObject != nullptr || !DefaultString.IsEmpty() || !DefaultText.IsEmpty();
+		return Value != nullptr || HasDefaultValue();
 	}
 
 	TTuple<const FProperty*, void*> GetValue(UObject* SourceObject, bool& OutDidUpdate);
@@ -159,6 +164,7 @@ public:
 #if WITH_EDITORONLY_DATA
 	virtual bool DoesBindingItemDefaultToSelf(const FName& InItemName) const { return false; }
 	virtual bool IsBindingItemWorldContextObject(const FName& InItemName) const { return false; }
+	virtual bool ShouldAutoCreateBindingItemValue(const FName& InItemName) const { return false; }
 
 	UPROPERTY()
 	FIntPoint NodePos = FIntPoint::ZeroValue;

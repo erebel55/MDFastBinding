@@ -21,6 +21,8 @@ public:
 #if WITH_EDITORONLY_DATA
 	virtual bool DoesBindingItemDefaultToSelf(const FName& InItemName) const override;
 	virtual bool IsBindingItemWorldContextObject(const FName& InItemName) const override;
+	virtual bool ShouldAutoCreateBindingItemValue(const FName& InItemName) const override;
+
 	virtual FText GetDisplayName() override;
 #endif
 
