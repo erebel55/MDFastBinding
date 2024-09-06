@@ -359,6 +359,44 @@ const FPinConnectionResponse UMDFastBindingGraphSchema::CanCreateConnection(cons
 {
 	if (A->Direction != B->Direction)
 	{
+		auto GatherCircularNodes = [](UEdGraphNode* RootNode, EEdGraphPinDirection Direction) -> TArray<UEdGraphNode*>
+		{
+			EEdGraphPinDirection OpDirection = Direction == EGPD_Output ? EGPD_Input : EGPD_Output;
+			TArray<UEdGraphNode*> CircularNodes;
+			while (RootNode)
+			{
+				UEdGraphNode* TestNode = RootNode;
+				RootNode = nullptr;
+				CircularNodes.Add(TestNode);
+
+				for (UEdGraphPin* Pin : TestNode->Pins)
+				{
+					if (Pin->Direction == OpDirection)
+					{
+						UEdGraphPin** NextInputPinPtr = Pin->LinkedTo.FindByPredicate([Direction](const UEdGraphPin* TestPin) { return TestPin != nullptr && TestPin->Direction == Direction; });
+						if (NextInputPinPtr && *NextInputPinPtr)
+						{
+							RootNode = (*NextInputPinPtr)->GetOwningNode();
+							break;
+						}
+					}
+				}
+			}
+
+			return CircularNodes;
+		};
+
+		const UEdGraphPin* InputPin = (A->Direction == EGPD_Input) ? A : B;
+		const TArray<UEdGraphNode*> NodesRightOfInput = GatherCircularNodes(InputPin->GetOwningNode(), EGPD_Input);
+
+		const UEdGraphPin* OutputPin = (A->Direction == EGPD_Output) ? A : B;
+		const TArray<UEdGraphNode*> NodesLeftOfOutput = GatherCircularNodes(OutputPin->GetOwningNode(), EGPD_Output);
+
+		if (NodesLeftOfOutput.Contains(InputPin->GetOwningNode()) || NodesRightOfInput.Contains(OutputPin->GetOwningNode()))
+		{
+			return FPinConnectionResponse(CONNECT_RESPONSE_DISALLOW, TEXT("Cannot create a circular graph"));
+		}
+
 		const bool bAHasConnections = A->LinkedTo.Num() > 0;
 		const bool bBHasConnections = B->LinkedTo.Num() > 0;
 
@@ -417,9 +455,7 @@ bool UMDFastBindingGraphSchema::TryCreateConnection(UEdGraphPin* A, UEdGraphPin*
 			return false;
 		}
 
-		InputObject->SetBindingItem(InputPin->GetFName(), ValueObject);
-
-		// Delete the old ValueObject
+		// Removes references to ValueObject before creating the new connection
 		if (OldOutputLinkedTo.Num() == 0)
 		{
 			if (UMDFastBindingInstance* Binding = ValueObject->GetOuterBinding())
@@ -437,6 +473,8 @@ bool UMDFastBindingGraphSchema::TryCreateConnection(UEdGraphPin* A, UEdGraphPin*
 				}
 			}
 		}
+
+		InputObject->SetBindingItem(InputPin->GetFName(), ValueObject);
 
 		FBlueprintEditorUtils::MarkBlueprintAsModified(InputNode->GetTypedOuter<UBlueprint>());
 
