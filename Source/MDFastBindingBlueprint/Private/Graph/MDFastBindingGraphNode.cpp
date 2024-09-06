@@ -32,6 +32,11 @@ void UMDFastBindingGraphNode::SetBindingObject(UMDFastBindingObject* InObject)
 		NodePosY = InObject->NodePos.Y;
 		NodeComment = InObject->DevComment;
 		bCommentBubbleVisible = InObject->bIsCommentBubbleVisible;
+		NodeGuid = InObject->BindingObjectIdentifier;
+	}
+	else
+	{
+		CreateNewGuid();
 	}
 }
 
@@ -373,6 +378,8 @@ void UMDFastBindingGraphNode::AllocateDefaultPins()
 
 			if (Pin != nullptr)
 			{
+				Pin->PinId = FGuid::NewDeterministicGuid(Item.ItemName.ToString(), GetTypeHash(Object->BindingObjectIdentifier));
+
 				if (Item.bIsWorldContextPin)
 				{
 					Pin->bHidden = !(Blueprint && Blueprint->ParentClass && Blueprint->ParentClass->HasMetaDataHierarchical(FBlueprintMetadata::MD_ShowWorldContextPin));
@@ -432,12 +439,14 @@ void UMDFastBindingGraphNode::AllocateDefaultPins()
 				FEdGraphPinType OutputPinType;
 				GetDefault<UEdGraphSchema_K2>()->ConvertPropertyToPinType(OutputProp, OutputPinType);
 				UEdGraphPin* Pin = CreatePin(EGPD_Output, OutputPinType, OutputPinName);
+				Pin->PinId = FGuid::NewDeterministicGuid(OutputPinName.ToString(), GetTypeHash(Object->BindingObjectIdentifier));
 				SetupPinTextData(Pin, OutputProp);
 			}
 			else
 			{
 				// Create an invalid pin so we show _something_
-				CreatePin(EGPD_Output, NAME_None, OutputPinName);
+				UEdGraphPin* Pin = CreatePin(EGPD_Output, NAME_None, OutputPinName);
+				Pin->PinId = FGuid::NewDeterministicGuid(OutputPinName.ToString(), GetTypeHash(Object->BindingObjectIdentifier));
 			}
 		}
 	}

@@ -34,7 +34,6 @@ void UMDFastBindingGraph::SetBinding(UMDFastBindingInstance* InBinding)
 	for (UMDFastBindingObject* Object : Objects)
 	{
 		UMDFastBindingGraphNode* NewNode = Cast<UMDFastBindingGraphNode>(CreateNode(UMDFastBindingGraphNode::StaticClass(), false));
-		NewNode->CreateNewGuid();
 		NewNode->SetBindingObject(Object);
 		NewNode->AllocateDefaultPins();
 	}
