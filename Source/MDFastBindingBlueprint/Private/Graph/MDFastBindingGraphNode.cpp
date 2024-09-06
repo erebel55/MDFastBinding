@@ -333,27 +333,38 @@ void UMDFastBindingGraphNode::AllocateDefaultPins()
 			Function = ValueFunc->GetFunction();
 		}
 
-		auto SetupPinTextData = [this, Function](UEdGraphPin* Pin, const FProperty* ItemProp)
+		auto SetupPinTextData = [this, Function](UEdGraphPin* Pin, const FProperty* ItemProp, const FMDFastBindingItem* Item)
 		{
-			if (Pin == nullptr || ItemProp == nullptr)
+			if (Pin == nullptr)
 			{
 				return;
 			}
 
-			Pin->PinFriendlyName = ItemProp->HasMetaData(FBlueprintMetadata::MD_DisplayName)
-				? FText::FromString(ItemProp->GetMetaData(FBlueprintMetadata::MD_DisplayName))
-				: FText::GetEmpty();
-
-			if (IsValid(Function))
+			if (Item != nullptr && !Item->DisplayName.IsEmptyOrWhitespace())
 			{
-				// HACK - Temporarily swap our schema since GeneratePinTooltipFromFunction _needlessly_ ensures if it's not the K2 Schema
+				Pin->PinFriendlyName = Item->DisplayName;
+			}
+			else if (ItemProp != nullptr)
+			{
+				Pin->PinFriendlyName = ItemProp->HasMetaData(FBlueprintMetadata::MD_DisplayName)
+					? FText::FromString(ItemProp->GetMetaData(FBlueprintMetadata::MD_DisplayName))
+					: FText::GetEmpty();
+			}
+
+			if (Item != nullptr && !Item->ToolTip.IsEmptyOrWhitespace())
+			{
+				Pin->PinToolTip = Item->ToolTip.ToString();
+			}
+			else if (IsValid(Function))
+			{
+				// HACK - Temporarily swap our schema since UEdGraphSchema_K2::ConstructBasicPinTooltip _needlessly_ ensures if it's not the K2 Schema
 				if (UMDFastBindingGraph* MDGraph = Cast<UMDFastBindingGraph>(GetGraph()))
 				{
 					TGuardValue<TSubclassOf<UEdGraphSchema>> SchemaGuard(MDGraph->Schema, UEdGraphSchema_K2::StaticClass());
 					UK2Node_CallFunction::GeneratePinTooltipFromFunction(*Pin, Function);
 				}
 			}
-			else
+			else if (ItemProp != nullptr)
 			{
 				static const FText PinToolTipFormat = LOCTEXT("PinToolTipFormat", "{0} ({1}) \n{2}");
 				Pin->PinToolTip = FText::Format(PinToolTipFormat, ItemProp->GetDisplayNameText(), FText::FromString(FMDFastBindingHelpers::PropertyToString(*ItemProp)), ItemProp->GetToolTipText()).ToString();
@@ -429,7 +440,7 @@ void UMDFastBindingGraphNode::AllocateDefaultPins()
 				}
 			}
 
-			SetupPinTextData(Pin, ItemProp);
+			SetupPinTextData(Pin, ItemProp, &Item);
 		}
 
 		if (UMDFastBindingValueBase* ValueObject = Cast<UMDFastBindingValueBase>(Object))
@@ -440,7 +451,7 @@ void UMDFastBindingGraphNode::AllocateDefaultPins()
 				GetDefault<UEdGraphSchema_K2>()->ConvertPropertyToPinType(OutputProp, OutputPinType);
 				UEdGraphPin* Pin = CreatePin(EGPD_Output, OutputPinType, OutputPinName);
 				Pin->PinId = FGuid::NewDeterministicGuid(OutputPinName.ToString(), GetTypeHash(Object->BindingObjectIdentifier));
-				SetupPinTextData(Pin, OutputProp);
+				SetupPinTextData(Pin, OutputProp, nullptr);
 			}
 			else
 			{

@@ -109,6 +109,6 @@ void UMDFastBindingValue_FormatText::SetupBindingItems()
 
 	for (const FName& Arg : Arguments)
 	{
-		EnsureBindingItemExists(Arg, GetOutputProperty(), FText::GetEmpty());
+		EnsureBindingItemExists(Arg, GetOutputProperty(), FText::GetEmpty()).ForceDisplayItemName();
 	}
 }

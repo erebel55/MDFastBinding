@@ -98,8 +98,8 @@ void UMDFastBindingValue_Select::SetupBindingItems()
 	{
 		ExpectedNames.Add(MDFastBindingValue_Select_Private::TrueItemName);
 		ExpectedNames.Add(MDFastBindingValue_Select_Private::FalseItemName);
-		EnsureBindingItemExists(MDFastBindingValue_Select_Private::TrueItemName, OutputProp, FText::GetEmpty(), true);
-		EnsureBindingItemExists(MDFastBindingValue_Select_Private::FalseItemName, OutputProp, FText::GetEmpty(), true);
+		EnsureBindingItemExists(MDFastBindingValue_Select_Private::TrueItemName, OutputProp, FText::GetEmpty(), true).ForceDisplayItemName();
+		EnsureBindingItemExists(MDFastBindingValue_Select_Private::FalseItemName, OutputProp, FText::GetEmpty(), true).ForceDisplayItemName();
 	}
 	else if (const FEnumProperty* EnumProp = CastField<const FEnumProperty>(SelectValueProp))
 	{
@@ -124,15 +124,15 @@ void UMDFastBindingValue_Select::SetupBindingItems()
 #endif
 
 				ExpectedNames.Add(EnumNameString);
-				EnsureBindingItemExists(EnumNameString, OutputProp, FText::GetEmpty(), true);
+				EnsureBindingItemExists(EnumNameString, OutputProp, FText::GetEmpty(), true).ForceDisplayItemName();
 			}
 		}
 	}
 	else
 	{
 		ExpectedNames.Add(MDFastBindingValue_Select_Private::FallbackResultInputName);
-		EnsureBindingItemExists(MDFastBindingValue_Select_Private::FallbackResultInputName, ResolveOutputProperty()
-			, LOCTEXT("FallbackInputDescription", "If the input value doesn't map to any of the inputs, this value is output instead."), true);
+		EnsureBindingItemExists(MDFastBindingValue_Select_Private::FallbackResultInputName, OutputProp
+			, LOCTEXT("FallbackInputDescription", "If the input value doesn't map to any of the inputs, this value is output instead."), true).ForceDisplayItemName();
 
 		ExtendablePinListCount = FMath::Max(1, ExtendablePinListCount);
 	}
@@ -172,8 +172,8 @@ void UMDFastBindingValue_Select::SetupBindingItems()
 void UMDFastBindingValue_Select::SetupExtendablePinBindingItem(int32 ItemIndex)
 {
 	const FProperty* SelectValueProp = ResolveBindingItemProperty(MDFastBindingValue_Select_Private::SelectValueInputName);
-	EnsureExtendableBindingItemExists(MDFastBindingValue_Select_Private::FromValueItemName, SelectValueProp, FText::GetEmpty(), ItemIndex);
-	EnsureExtendableBindingItemExists(MDFastBindingValue_Select_Private::ToValueItemName, ResolveOutputProperty(), FText::GetEmpty(), ItemIndex);
+	EnsureExtendableBindingItemExists(MDFastBindingValue_Select_Private::FromValueItemName, SelectValueProp, FText::GetEmpty(), ItemIndex).ForceDisplayItemName();
+	EnsureExtendableBindingItemExists(MDFastBindingValue_Select_Private::ToValueItemName, ResolveOutputProperty(), FText::GetEmpty(), ItemIndex).ForceDisplayItemName();
 }
 
 #if WITH_EDITORONLY_DATA

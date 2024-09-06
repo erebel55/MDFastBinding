@@ -66,6 +66,7 @@ public:
 	double LastUpdateTime = 0.0;
 #endif
 
+	FText DisplayName;
 	FText ToolTip;
 
 	TWeakFieldPtr<const FProperty> ItemProperty;
@@ -98,6 +99,12 @@ public:
 
 	// Resolves wildcard binding items (where ItemProperty is null, the output property of Value is used instead)
 	const FProperty* ResolveOutputProperty() const;
+
+#if WITH_EDITOR
+	void ForceDisplayItemName();
+#else
+	void ForceDisplayItemName() {}
+#endif
 
 #if WITH_EDITOR
 	TTuple<const FProperty*, void*> GetCachedValue() const;

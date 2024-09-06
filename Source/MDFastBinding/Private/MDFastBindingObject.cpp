@@ -121,6 +121,11 @@ const FProperty* FMDFastBindingItem::ResolveOutputProperty() const
 }
 
 #if WITH_EDITOR
+void FMDFastBindingItem::ForceDisplayItemName()
+{
+	DisplayName = FText::FromName(ItemName);
+}
+
 TTuple<const FProperty*, void*> FMDFastBindingItem::GetCachedValue() const
 {
 	if (Value != nullptr)
