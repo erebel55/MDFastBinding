@@ -417,6 +417,11 @@ FMDFastBindingItem& UMDFastBindingObject::EnsureBindingItemExists(const FName& I
 		BindingItems.Add(MoveTemp(Item));
 		BindingItem = BindingItems.FindByKey(ItemName);
 	}
+	else if (BindingItem->HasDefaultValue() && BindingItem->ItemProperty.Get() != ItemProperty)
+	{
+		// Clear defaults when the item property changed
+		BindingItem->ClearDefaultValues();
+	}
 
 #if WITH_EDITORONLY_DATA
 	// These are only set at editor time since they depend on editor-only meta data
