@@ -17,6 +17,24 @@ UMDFastBindingDestination_Property::UMDFastBindingDestination_Property()
 	PropertyPath.bOnlyAllowBlueprintReadWriteProperties = true;
 }
 
+bool UMDFastBindingDestination_Property::IsUObjectPropertyOwner() const
+{
+	return Cast<UClass>(GetPropertyOwnerStruct()) != nullptr;
+}
+
+UObject* UMDFastBindingDestination_Property::GetUObjectPropertyOwner(UObject* SourceObject)
+{
+	if (IsUObjectPropertyOwner())
+	{
+		if (void* PropertyOwnerPtr = GetPropertyOwner(SourceObject))
+		{
+			return *static_cast<UObject**>(PropertyOwnerPtr);
+		}
+	}
+
+	return nullptr;
+}
+
 void UMDFastBindingDestination_Property::InitializeDestination_Internal(UObject* SourceObject)
 {
 	Super::InitializeDestination_Internal(SourceObject);
@@ -37,11 +55,11 @@ void UMDFastBindingDestination_Property::UpdateDestination_Internal(UObject* Sou
 	}
 
 	// GetPropertyOwner updates bNeedsUpdate internally
-	UObject* RootObject = GetPropertyOwner(SourceObject);
+	void* RootObjectPtr = GetPropertyOwner(SourceObject);
 	if (UpdateType != EMDFastBindingUpdateType::IfUpdatesNeeded || bDidUpdate || bNeedsUpdate || CheckCachedNeedsUpdate())
 	{
 		void* PropertyContainer = nullptr;
-		const TTuple<const FProperty*, void*> Property = PropertyPath.ResolvePathFromRootObject(RootObject, PropertyContainer);
+		const TTuple<const FProperty*, void*> Property = PropertyPath.ResolvePathFromRootObject(RootObjectPtr, PropertyContainer);
 		if (Property.Key == nullptr || Property.Value == nullptr)
 		{
 			return;
@@ -54,7 +72,7 @@ void UMDFastBindingDestination_Property::UpdateDestination_Internal(UObject* Sou
 
 		if (bShouldBroadcastField)
 		{
-			if (INotifyFieldValueChanged* FieldNotify = Cast<INotifyFieldValueChanged>(RootObject))
+			if (INotifyFieldValueChanged* FieldNotify = Cast<INotifyFieldValueChanged>(GetUObjectPropertyOwner(SourceObject)))
 			{
 				FieldNotify->BroadcastFieldValueChanged(BoundFieldId);
 			}
@@ -72,26 +90,33 @@ void UMDFastBindingDestination_Property::PostInitProperties()
 	Super::PostInitProperties();
 }
 
-UObject* UMDFastBindingDestination_Property::GetPropertyOwner(UObject* SourceObject)
+void* UMDFastBindingDestination_Property::GetPropertyOwner(UObject* SourceObject)
 {
-	bool bDidUpdate = false;
-	const TTuple<const FProperty*, void*> PathRoot = GetBindingItemValue(SourceObject, MDFastBindingDestination_Property_Private::PathRootName, bDidUpdate);
-	bNeedsUpdate = bDidUpdate;
-
-	if (PathRoot.Value != nullptr)
+	FMDFastBindingItem* PathRootItem = FindBindingItem(MDFastBindingDestination_Property_Private::PathRootName);
+	if (PathRootItem == nullptr)
 	{
-		return *static_cast<UObject**>(PathRoot.Value);
-	}
-	else if (PathRoot.Key != nullptr)
-	{
-		// null value, but key is valid so it failed to get a value, just return null as the owner
 		return nullptr;
 	}
 
-	return SourceObject;
+	bool bDidUpdate = false;
+	const TTuple<const FProperty*, void*> PathRoot = PathRootItem->GetValue(SourceObject, bDidUpdate);
+	bNeedsUpdate = bDidUpdate;
+	if (PathRoot.Key != nullptr && (PathRoot.Key->IsA<FObjectPropertyBase>() || PathRoot.Key->IsA<FStructProperty>()))
+	{
+		return PathRoot.Value;
+	}
+
+	if (PathRootItem->Value != nullptr)
+	{
+		// invalid value, but there's a value input so it failed to get a value, just return null as the owner
+		return nullptr;
+	}
+
+	TempSourceObject = SourceObject;
+	return &TempSourceObject;
 }
 
-UStruct* UMDFastBindingDestination_Property::GetPropertyOwnerStruct()
+UStruct* UMDFastBindingDestination_Property::GetPropertyOwnerStruct() const
 {
 	if (const FObjectPropertyBase* ObjectProp = CastField<const FObjectPropertyBase>(GetBindingItemValueProperty(MDFastBindingDestination_Property_Private::PathRootName)))
 	{
@@ -110,7 +135,7 @@ void UMDFastBindingDestination_Property::SetupBindingItems()
 	Super::SetupBindingItems();
 
 	EnsureBindingItemExists(MDFastBindingDestination_Property_Private::PathRootName
-		, nullptr
+		, GetClass()->FindPropertyByName(GET_MEMBER_NAME_CHECKED(UMDFastBindingDestination_Property, ObjectProperty))
 		, LOCTEXT("PathRootToolTip", "The root object that has the property to set the value of. (Defaults to 'Self').")
 		, true);
 	EnsureBindingItemExists(MDFastBindingDestination_Property_Private::ValueSourceName

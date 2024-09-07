@@ -14,8 +14,6 @@ class MDFASTBINDING_API UMDFastBindingValue_Function : public UMDFastBindingValu
 	GENERATED_BODY()
 
 public:
-	UMDFastBindingValue_Function();
-
 	virtual const FProperty* GetOutputProperty() override;
 
 #if WITH_EDITORONLY_DATA

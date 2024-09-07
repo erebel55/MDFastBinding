@@ -116,18 +116,23 @@ TTuple<const FProperty*, void*> FMDFastBindingFieldPath::ResolvePath(UObject* So
 
 TTuple<const FProperty*, void*> FMDFastBindingFieldPath::ResolvePath(UObject* SourceObject, void*& OutContainer)
 {
-	UObject* RootObject = OwnerGetter.IsBound() ? OwnerGetter.Execute(SourceObject) : nullptr;
+	void* RootObject = OwnerGetter.IsBound() ? OwnerGetter.Execute(SourceObject) : nullptr;
 	return ResolvePathFromRootObject(RootObject, OutContainer);
 }
 
 TTuple<const FProperty*, void*> FMDFastBindingFieldPath::ResolvePathFromRootObject(UObject* RootObject, void*& OutContainer)
 {
+	return ResolvePathFromRootObject(&RootObject, OutContainer);
+}
+
+TTuple<const FProperty*, void*> FMDFastBindingFieldPath::ResolvePathFromRootObject(void* RootObjectPtr, void*& OutContainer)
+{
 	OutContainer = nullptr;
 
-	void* Owner = IsValid(RootObject) ? &RootObject : nullptr;
+	void* Owner = RootObjectPtr;
 	if (Owner != nullptr)
 	{
-		bool bIsOwnerAUObject = true;
+		bool bIsOwnerAUObject = Cast<UClass>(GetPathOwnerStruct()) != nullptr;
 		void* LastOwner = nullptr;
 		const TArray<FMDFastBindingWeakFieldVariant>& Path = GetWeakFieldPath();
 		for (int32 i = 0; i < Path.Num() && Owner != nullptr; ++i)

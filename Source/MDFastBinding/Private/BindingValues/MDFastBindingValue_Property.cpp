@@ -9,11 +9,6 @@ namespace MDFastBindingValue_Property_Private
 	const FName PathRootName = TEXT("Path Root");
 }
 
-UMDFastBindingValue_Property::UMDFastBindingValue_Property()
-{
-
-}
-
 TTuple<const FProperty*, void*> UMDFastBindingValue_Property::GetValue_Internal(UObject* SourceObject)
 {
 	return PropertyPath.ResolvePath(SourceObject);
@@ -22,6 +17,24 @@ TTuple<const FProperty*, void*> UMDFastBindingValue_Property::GetValue_Internal(
 const FProperty* UMDFastBindingValue_Property::GetOutputProperty()
 {
 	return PropertyPath.GetLeafProperty();
+}
+
+bool UMDFastBindingValue_Property::IsUObjectPropertyOwner() const
+{
+	return Cast<UClass>(GetPropertyOwnerStruct()) != nullptr;
+}
+
+UObject* UMDFastBindingValue_Property::GetUObjectPropertyOwner(UObject* SourceObject)
+{
+	if (IsUObjectPropertyOwner())
+	{
+		if (void* PropertyOwnerPtr = GetPropertyOwner(SourceObject))
+		{
+			return *static_cast<UObject**>(PropertyOwnerPtr);
+		}
+	}
+
+	return nullptr;
 }
 
 #if WITH_EDITORONLY_DATA
@@ -41,25 +54,32 @@ FText UMDFastBindingValue_Property::GetDisplayName()
 }
 #endif
 
-UObject* UMDFastBindingValue_Property::GetPropertyOwner(UObject* SourceObject)
+void* UMDFastBindingValue_Property::GetPropertyOwner(UObject* SourceObject)
 {
-	bool bDidUpdate = false;
-	const TTuple<const FProperty*, void*> PathRoot = GetBindingItemValue(SourceObject, MDFastBindingValue_Property_Private::PathRootName, bDidUpdate);
-
-	if (PathRoot.Value != nullptr)
+	FMDFastBindingItem* PathRootItem = FindBindingItem(MDFastBindingValue_Property_Private::PathRootName);
+	if (PathRootItem == nullptr)
 	{
-		return *static_cast<UObject**>(PathRoot.Value);
-	}
-	else if (PathRoot.Key != nullptr)
-	{
-		// null value, but key is valid so it failed to get a value, just return null as the owner
 		return nullptr;
 	}
 
-	return SourceObject;
+	bool bDidUpdate = false;
+	const TTuple<const FProperty*, void*> PathRoot = PathRootItem->GetValue(SourceObject, bDidUpdate);
+	if (PathRoot.Key != nullptr && (PathRoot.Key->IsA<FObjectPropertyBase>() || PathRoot.Key->IsA<FStructProperty>()))
+	{
+		return PathRoot.Value;
+	}
+
+	if (PathRootItem->Value != nullptr)
+	{
+		// invalid value, but there's a value input so it failed to get a value, just return null as the owner
+		return nullptr;
+	}
+
+	TempSourceObject = SourceObject;
+	return &TempSourceObject;
 }
 
-UStruct* UMDFastBindingValue_Property::GetPropertyOwnerStruct()
+UStruct* UMDFastBindingValue_Property::GetPropertyOwnerStruct() const
 {
 	const FProperty* RootProp = GetBindingItemValueProperty(MDFastBindingValue_Property_Private::PathRootName);
 	if (const FObjectPropertyBase* ObjectProp = CastField<const FObjectPropertyBase>(RootProp))

@@ -103,6 +103,7 @@ void UMDFastBindingGraph::SelectNodeWithBindingObject(UMDFastBindingObject* InOb
 	{
 		if (const TSharedPtr<SMDFastBindingEditorGraphWidget> GraphWidgetPtr = GraphWidget.Pin())
 		{
+			GraphWidgetPtr->ClearSelection();
 			GraphWidgetPtr->SetSelection(NodeWithObject, true);
 		}
 	}

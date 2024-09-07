@@ -15,6 +15,9 @@ class MDFASTBINDING_API UMDFastBindingDestination_Property : public UMDFastBindi
 public:
 	UMDFastBindingDestination_Property();
 
+	bool IsUObjectPropertyOwner() const;
+	UObject* GetUObjectPropertyOwner(UObject* SourceObject);
+
 #if WITH_EDITOR
 	virtual EDataValidationResult IsDataValid(TArray<FText>& ValidationErrors) override;
 
@@ -36,8 +39,8 @@ protected:
 
 	virtual void PostInitProperties() override;
 
-	virtual UObject* GetPropertyOwner(UObject* SourceObject);
-	virtual UStruct* GetPropertyOwnerStruct();
+	virtual void* GetPropertyOwner(UObject* SourceObject);
+	virtual UStruct* GetPropertyOwnerStruct() const;
 
 	virtual void SetupBindingItems() override;
 
@@ -51,5 +54,8 @@ protected:
 	UPROPERTY(Transient)
 	bool bNeedsUpdate = false;
 
-	UE::FieldNotification::FFieldId BoundFieldId;
+	UE::FieldNotification::FFieldId BoundFieldId = UE::FieldNotification::FFieldId(NAME_None, INDEX_NONE);
+
+	// A place to store the source object for the duration of a binding update
+	void* TempSourceObject = nullptr;
 };

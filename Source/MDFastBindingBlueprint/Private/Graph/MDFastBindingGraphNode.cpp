@@ -97,6 +97,7 @@ void UMDFastBindingGraphNode::DeleteNode(const TSet<UObject*>& OrphanExclusionSe
 				BindingDest->OrphanAllBindingItems(OrphanExclusionSet);
 			}
 
+			FBlueprintEditorUtils::MarkBlueprintAsModified(GetTypedOuter<UBlueprint>());
 			return;
 		}
 
@@ -114,6 +115,7 @@ void UMDFastBindingGraphNode::DeleteNode(const TSet<UObject*>& OrphanExclusionSe
 				}
 			}
 
+			FBlueprintEditorUtils::MarkBlueprintAsModified(GetTypedOuter<UBlueprint>());
 			return;
 		}
 
@@ -129,13 +131,12 @@ void UMDFastBindingGraphNode::DeleteNode(const TSet<UObject*>& OrphanExclusionSe
 			BindingValue->OrphanAllBindingItems(OrphanExclusionSet);
 		}
 
-		UMDFastBindingGraphNode* ConnectedNode = Cast<UMDFastBindingGraphNode>(ConnectedPin->GetOwningNode());
-		if (ConnectedNode == nullptr)
+		if (UMDFastBindingGraphNode* ConnectedNode = Cast<UMDFastBindingGraphNode>(ConnectedPin->GetOwningNode()))
 		{
-			return;
+			ConnectedNode->ClearConnection(ConnectedPin->GetFName());
 		}
 
-		ConnectedNode->ClearConnection(ConnectedPin->GetFName());
+		FBlueprintEditorUtils::MarkBlueprintAsModified(GetTypedOuter<UBlueprint>());
 	}
 }
 

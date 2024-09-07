@@ -48,7 +48,7 @@ void UMDFastBindingValue_FieldNotify::InitializeValue_Internal(UObject* SourceOb
 TTuple<const FProperty*, void*> UMDFastBindingValue_FieldNotify::GetValue_Internal(UObject* SourceObject)
 {
 	// If the owner has changed, we need to rebind to the delegate
-	if (Cast<INotifyFieldValueChanged>(GetPropertyOwner(SourceObject)) != BoundInterface.Get())
+	if (Cast<INotifyFieldValueChanged>(GetUObjectPropertyOwner(SourceObject)) != BoundInterface.Get())
 	{
 		BindFieldNotify(SourceObject);
 	}
@@ -97,7 +97,7 @@ void UMDFastBindingValue_FieldNotify::BindFieldNotify(UObject* SourceObject)
 
 	if (FieldId.IsValid())
 	{
-		if (UObject* PropertyOwner = GetPropertyOwner(SourceObject))
+		if (UObject* PropertyOwner = GetUObjectPropertyOwner(SourceObject))
 		{
 			if (INotifyFieldValueChanged* FieldNotify = Cast<INotifyFieldValueChanged>(PropertyOwner))
 			{
@@ -144,7 +144,7 @@ UE::FieldNotification::FFieldId UMDFastBindingValue_FieldNotify::GetFieldId(UObj
 {
 	if (const FFieldVariant Field = GetLeafField())
 	{
-		if (UObject* PropertyOwner = GetPropertyOwner(SourceObject))
+		if (UObject* PropertyOwner = GetUObjectPropertyOwner(SourceObject))
 		{
 			if (const INotifyFieldValueChanged* FieldNotify = Cast<INotifyFieldValueChanged>(PropertyOwner))
 			{

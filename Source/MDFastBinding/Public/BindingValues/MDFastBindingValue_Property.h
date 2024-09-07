@@ -13,9 +13,10 @@ class MDFASTBINDING_API UMDFastBindingValue_Property : public UMDFastBindingValu
 	GENERATED_BODY()
 
 public:
-	UMDFastBindingValue_Property();
-
 	virtual const FProperty* GetOutputProperty() override;
+
+	bool IsUObjectPropertyOwner() const;
+	UObject* GetUObjectPropertyOwner(UObject* SourceObject);
 
 #if WITH_EDITORONLY_DATA
 	virtual bool DoesBindingItemDefaultToSelf(const FName& InItemName) const override;
@@ -32,8 +33,8 @@ public:
 
 protected:
 	virtual TTuple<const FProperty*, void*> GetValue_Internal(UObject* SourceObject) override;
-	virtual UObject* GetPropertyOwner(UObject* SourceObject);
-	virtual UStruct* GetPropertyOwnerStruct();
+	virtual void* GetPropertyOwner(UObject* SourceObject);
+	virtual UStruct* GetPropertyOwnerStruct() const;
 
 	virtual const FProperty* GetPathRootProperty() const { return nullptr; }
 
@@ -46,4 +47,7 @@ protected:
 	// Path to the property you want to get
 	UPROPERTY(EditDefaultsOnly, Category = "Binding")
 	FMDFastBindingFieldPath PropertyPath;
+
+	// A place to store the source object for the duration of a binding update
+	void* TempSourceObject = nullptr;
 };

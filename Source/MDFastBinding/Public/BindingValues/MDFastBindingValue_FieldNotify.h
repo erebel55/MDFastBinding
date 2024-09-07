@@ -52,5 +52,5 @@ protected:
 private:
 	FDelegateHandle FieldNotifyHandle;
 	TWeakInterfacePtr<INotifyFieldValueChanged> BoundInterface;
-	UE::FieldNotification::FFieldId BoundFieldId;
+	UE::FieldNotification::FFieldId BoundFieldId = UE::FieldNotification::FFieldId(NAME_None, INDEX_NONE);
 };

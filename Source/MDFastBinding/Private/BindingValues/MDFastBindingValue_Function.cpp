@@ -10,11 +10,6 @@ namespace MDFastBindingValue_Function_Private
 	const FName FunctionOwnerName = TEXT("Function Owner");
 }
 
-UMDFastBindingValue_Function::UMDFastBindingValue_Function()
-{
-
-}
-
 TTuple<const FProperty*, void*> UMDFastBindingValue_Function::GetValue_Internal(UObject* SourceObject)
 {
 	bNeedsUpdate = false;
@@ -81,17 +76,29 @@ FText UMDFastBindingValue_Function::GetDisplayName()
 
 UObject* UMDFastBindingValue_Function::GetFunctionOwner(UObject* SourceObject)
 {
+	FMDFastBindingItem* FunctionOwnerItem = FindBindingItem(MDFastBindingValue_Function_Private::FunctionOwnerName);
+	if (FunctionOwnerItem == nullptr)
+	{
+		return nullptr;
+	}
+
 	bool bDidUpdate = false;
-	const TTuple<const FProperty*, void*> FunctionOwner = GetBindingItemValue(SourceObject, MDFastBindingValue_Function_Private::FunctionOwnerName, bDidUpdate);
+	const TTuple<const FProperty*, void*> FunctionOwner = FunctionOwnerItem->GetValue(SourceObject, bDidUpdate);
+	if (FunctionOwner.Key != nullptr && !FunctionOwner.Key->IsA<FObjectPropertyBase>())
+	{
+		// Only UObject function owners are allowed
+		return nullptr;
+	}
+
 	bNeedsUpdate |= bDidUpdate;
 
 	if (FunctionOwner.Value != nullptr)
 	{
 		return *static_cast<UObject**>(FunctionOwner.Value);
 	}
-	else if (FunctionOwner.Key != nullptr)
+	else if (FunctionOwnerItem->Value != nullptr)
 	{
-		// null value, but key is valid so it failed to get a value, just return null as the owner
+		// null value, but there's a value input so it failed to get a value, just return null as the owner
 		return nullptr;
 	}
 

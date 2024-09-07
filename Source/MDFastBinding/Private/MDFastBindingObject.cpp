@@ -424,7 +424,7 @@ FMDFastBindingItem& UMDFastBindingObject::EnsureBindingItemExists(const FName& I
 	}
 
 #if WITH_EDITORONLY_DATA
-	// These are only set at editor time since they depend on editor-only meta data
+	// These are only set at editor time since they depend on editor-only metadata
 	BindingItem->bIsSelfPin = DoesBindingItemDefaultToSelf(ItemName);
 	BindingItem->bIsWorldContextPin = IsBindingItemWorldContextObject(ItemName);
 #endif

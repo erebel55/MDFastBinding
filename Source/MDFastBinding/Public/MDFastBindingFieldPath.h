@@ -8,7 +8,7 @@
 
 #include "MDFastBindingFieldPath.generated.h"
 
-DECLARE_DELEGATE_RetVal_OneParam(UObject*, FMDGetFieldPathOwner, UObject*);
+DECLARE_DELEGATE_RetVal_OneParam(void*, FMDGetFieldPathOwner, UObject*);
 DECLARE_DELEGATE_RetVal(UStruct*, FMDGetFieldPathOwnerStruct);
 DECLARE_DELEGATE_RetVal_OneParam(bool, FMDFilterFieldPathField, const FFieldVariant&);
 
@@ -90,6 +90,7 @@ public:
 	TTuple<const FProperty*, void*> ResolvePath(UObject* SourceObject);
 	TTuple<const FProperty*, void*> ResolvePath(UObject* SourceObject, void*& OutContainer);
 	TTuple<const FProperty*, void*> ResolvePathFromRootObject(UObject* RootObject, void*& OutContainer);
+	TTuple<const FProperty*, void*> ResolvePathFromRootObject(void* RootObjectPtr, void*& OutContainer);
 
 	FFieldVariant GetLeafField();
 	UE::FieldNotification::FFieldId GetLeafFieldId();
@@ -107,6 +108,7 @@ public:
 	void OnVariableRenamed(UClass* VariableClass, const FName& OldVariableName, const FName& NewVariableName);
 #endif
 
+	// Should be the FProperty-stored value (void* to struct or UObject**)
 	FMDGetFieldPathOwner OwnerGetter;
 	FMDGetFieldPathOwnerStruct OwnerStructGetter;
 	FMDFilterFieldPathField FieldFilter;
