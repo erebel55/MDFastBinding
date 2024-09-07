@@ -1,52 +1,30 @@
 # MDFastBinding
-A versatile and performant alternative to property bindings for designer-friendly workflows. Intended for UMG widgets but usable in any blueprint.
+A versatile and performant alternative to UMG property bindings for designer-friendly workflows.
 The goal was to build a tool that allows mutating raw data into a form that can drive visuals, all within the editor, while staying performant.
 
 ## Requirements
 MDFastBinding now only supports Unreal 5.1 and later. See the [UE-4.27-5.0 tag](https://github.com/DoubleDeez/MDFastBinding/tree/UE-4.27-5.0) for older versions.
-Setting up MDFastBinding with this repo requires that you build your own code.
 
 ## Setup
-1. Clone this repo into your Plugins folder.
-2. **This step is not required for User Widgets**  
-Add a BindingContainer instance to your class and call the binding functions at the appropriate locations:
-
-In your header:
-```cpp
-// This property will be automatically populated by the Binding Editor when you setup your bindings
-UPROPERTY(Instanced)
-TObjectPtr<class UMDFastBindingContainer> Bindings = nullptr;
-```
-
-In your source file:
-```cpp
-#include "MDFastBindingContainer.h"
-
-// Usually in a Construct type function
-Bindings->InitializeBindings(this);
-// Usually in a Tick type function
-Bindings->UpdateBindings(this);
-// Usually in a Destroy type function
-Bindings->TerminateBindings(this);
-```
-3. Launch the editor, enable the plugin, and restart the editor if necessary.
-4. Create a blueprint that extends your class (or `UserWidget`)
-5. In the editor of your blueprint, you should see a "Binding Editor" button in the toolbar (may require closing and reopening your blueprint if you reparented it):
+1. Clone this repo into your Plugins folder or download a [pre-compiled release](https://github.com/DoubleDeez/MDFastBinding/releases).
+2. Launch the editor, enable the plugin, and restart the editor if necessary.
+3. Create a blueprint that extends your class (or `UserWidget`)
+4. In the editor of your blueprint, you should see a "Binding Editor" button in the toolbar:
 
 ![Unreal 5 Binding Icon](Resources/readme-binding-editor-ue5.png)
 
-6. This will open a new tab with an empty graph and an empty list on the left side. Create a new binding by click the "Add Binding" button in the bottom left and name your new binding.
+5. This will open a new tab with an empty graph and an empty list on the left side. Create a new binding by click the "Add Binding" button in the bottom left and name your new binding.
 
 ![Unreal 5 Binding Icon](Resources/readme-add-binding-ue5.png)
 
-7. Now on the right side, you can right-click and start adding nodes to your new binding.  
+6. Now on the right side, you can right-click and start adding nodes to your new binding.
 Here's a screenshot binding 2 health variables to a progress bar widget's percent:
 
 ![Example of binding a health bar percentage](Resources/readme-binding-example.png)
 
 ### Binding Widget Properties
 
-You can use the normal property binding menu in the Widget Designer to create Fast Bindings. This will auto populate a binding that sets the property you selected and opens the binding editor drawer. The widget you have selected must have `Is Variable` checked for the binding menu to display.
+You can use the normal property binding menu in the Widget Designer to create Fast Bindings. This will auto-populate a binding that sets the property you selected and opens the binding editor drawer. The widget you have selected must have `Is Variable` checked for the binding menu to display.
 
 When a property has an existing binding, the binding menu will show the binding's status (Error or Performance rating) and the binding's name.
 

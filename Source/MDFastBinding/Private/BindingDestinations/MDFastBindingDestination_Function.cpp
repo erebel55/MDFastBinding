@@ -179,7 +179,7 @@ bool UMDFastBindingDestination_Function::ShouldAutoCreateBindingItemValue(const 
 
 			for (const FString& ParameterName : AutoCreateParams)
 			{
-				if (InItemName == ParameterName.TrimStartAndEnd())
+				if (InItemName.ToString() == ParameterName.TrimStartAndEnd())
 				{
 					return true;
 				}

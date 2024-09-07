@@ -1,6 +1,10 @@
 ﻿#include "MDFastBindingFieldPath.h"
 
+#if ENGINE_MAJOR_VERSION > 5 || ENGINE_MINOR_VERSION >= 3
 #include "INotifyFieldValueChanged.h"
+#else
+#include "FieldNotification/IFieldValueChanged.h"
+#endif
 #include "MDFastBindingHelpers.h"
 
 FMDFastBindingFieldPath::~FMDFastBindingFieldPath()

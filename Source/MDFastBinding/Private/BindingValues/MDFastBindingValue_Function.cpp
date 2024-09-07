@@ -51,7 +51,7 @@ bool UMDFastBindingValue_Function::ShouldAutoCreateBindingItemValue(const FName&
 
 			for (const FString& ParameterName : AutoCreateParams)
 			{
-				if (InItemName == ParameterName.TrimStartAndEnd())
+				if (InItemName.ToString() == ParameterName.TrimStartAndEnd())
 				{
 					return true;
 				}

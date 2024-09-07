@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "EdGraph/EdGraph.h"
+#include "Runtime/Launch/Resources/Version.h"
 #include "MDFastBindingGraph.generated.h"
 
 class UMDFastBindingObject;
@@ -17,7 +18,9 @@ class MDFASTBINDINGBLUEPRINT_API UMDFastBindingGraph : public UEdGraph
 	GENERATED_BODY()
 
 public:
+#if ENGINE_MAJOR_VERSION > 5 || ENGINE_MINOR_VERSION >= 3
 	virtual void AddNode(UEdGraphNode* NodeToAdd, bool bUserAction, bool bSelectNewNode) override;
+#endif
 
 	void SetGraphWidget(TSharedRef<SMDFastBindingEditorGraphWidget> InGraphWidget);
 

@@ -1,17 +1,18 @@
 ﻿#include "Graph/MDFastBindingGraphNode.h"
 
 #include "BindingDestinations/MDFastBindingDestinationBase.h"
+#include "BindingDestinations/MDFastBindingDestination_Function.h"
 #include "BindingValues/MDFastBindingValueBase.h"
+#include "BindingValues/MDFastBindingValue_Function.h"
 #include "EdGraphSchema_K2.h"
 #include "Graph/MDFastBindingGraph.h"
-#include "MDFastBindingInstance.h"
-#include "MDFastBindingObject.h"
 #include "Graph/SMDFastBindingGraphNodeWidget.h"
-#include "BindingDestinations/MDFastBindingDestination_Function.h"
-#include "BindingValues/MDFastBindingValue_Function.h"
 #include "K2Node_CallFunction.h"
 #include "Kismet2/BlueprintEditorUtils.h"
 #include "MDFastBindingHelpers.h"
+#include "MDFastBindingInstance.h"
+#include "MDFastBindingObject.h"
+#include "Misc/EngineVersionComparison.h"
 #include "Styling/SlateStyleRegistry.h"
 
 #define LOCTEXT_NAMESPACE "MDFastBindingGraphNode"
@@ -372,6 +373,44 @@ void UMDFastBindingGraphNode::AllocateDefaultPins()
 			}
 		};
 
+#if UE_VERSION_OLDER_THAN(5, 4, 0)
+		auto BackPortDeterministicGuid = [](FStringView ObjectPath, uint32 Seed)
+		{
+			// Convert the objectpath to utf8 so that whether TCHAR is UTF8 or UTF16 does not alter the hash.
+#if UE_VERSION_OLDER_THAN(5, 3, 0)
+			TUtf8StringBuilder<1024> Utf8ObjectPath;
+			Utf8ObjectPath << ObjectPath;
+#else
+			TUtf8StringBuilder<1024> Utf8ObjectPath(InPlace, ObjectPath);
+#endif
+
+			FBlake3 Builder;
+
+			// Hash this as the namespace of the Version 3 UUID, to avoid collisions with any other guids created using Blake3.
+			static FGuid BaseVersion(TEXT("182b8dd3-f963-477f-a57d-70a339d922d8"));
+			Builder.Update(&BaseVersion, sizeof(FGuid));
+			Builder.Update(&Seed, sizeof(Seed));
+			Builder.Update(Utf8ObjectPath.GetData(), Utf8ObjectPath.Len() * sizeof(UTF8CHAR));
+
+			FBlake3Hash Hash = Builder.Finalize();
+
+			// We use the first 16 bytes of the BLAKE3 hash to create the guid, there is no specific reason why these were
+			// chosen, we could take any pattern or combination of bytes.
+			uint32* HashBytes = (uint32*)Hash.GetBytes();
+			uint32 A = uint32(HashBytes[0]);
+			uint32 B = uint32(HashBytes[1]);
+			uint32 C = uint32(HashBytes[2]);
+			uint32 D = uint32(HashBytes[3]);
+
+			// Convert to a Variant 1 Version 3 UUID, which is meant to be created by hashing the namespace and name with MD5.
+			// We use that version even though we're using BLAKE3 instead of MD5 because we don't have a better alternative.
+			// It is still very useful for avoiding collisions with other UUID variants.
+			B = (B & ~0x0000f000) | 0x00003000; // Version 3 (MD5)
+			C = (C & ~0xc0000000) | 0x80000000; // Variant 1 (RFC 4122 UUID)
+			return FGuid(A, B, C, D);
+		};
+#endif
+
 		for (FMDFastBindingItem& Item : Object->GetBindingItems())
 		{
 			UEdGraphPin* Pin = nullptr;
@@ -390,7 +429,11 @@ void UMDFastBindingGraphNode::AllocateDefaultPins()
 
 			if (Pin != nullptr)
 			{
+#if UE_VERSION_OLDER_THAN(5, 4, 0)
+				Pin->PinId = BackPortDeterministicGuid(Item.ItemName.ToString(), GetTypeHash(Object->BindingObjectIdentifier));
+#else
 				Pin->PinId = FGuid::NewDeterministicGuid(Item.ItemName.ToString(), GetTypeHash(Object->BindingObjectIdentifier));
+#endif
 
 				if (Item.bIsWorldContextPin)
 				{
@@ -451,14 +494,22 @@ void UMDFastBindingGraphNode::AllocateDefaultPins()
 				FEdGraphPinType OutputPinType;
 				GetDefault<UEdGraphSchema_K2>()->ConvertPropertyToPinType(OutputProp, OutputPinType);
 				UEdGraphPin* Pin = CreatePin(EGPD_Output, OutputPinType, OutputPinName);
+#if UE_VERSION_OLDER_THAN(5, 4, 0)
+				Pin->PinId = BackPortDeterministicGuid(OutputPinName.ToString(), GetTypeHash(Object->BindingObjectIdentifier));
+#else
 				Pin->PinId = FGuid::NewDeterministicGuid(OutputPinName.ToString(), GetTypeHash(Object->BindingObjectIdentifier));
+#endif
 				SetupPinTextData(Pin, OutputProp, nullptr);
 			}
 			else
 			{
 				// Create an invalid pin so we show _something_
 				UEdGraphPin* Pin = CreatePin(EGPD_Output, NAME_None, OutputPinName);
+#if UE_VERSION_OLDER_THAN(5, 4, 0)
+				Pin->PinId = BackPortDeterministicGuid(OutputPinName.ToString(), GetTypeHash(Object->BindingObjectIdentifier));
+#else
 				Pin->PinId = FGuid::NewDeterministicGuid(OutputPinName.ToString(), GetTypeHash(Object->BindingObjectIdentifier));
+#endif
 			}
 		}
 	}

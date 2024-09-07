@@ -1,6 +1,11 @@
 ﻿#include "BindingDestinations/MDFastBindingDestination_Property.h"
 
+#include "Runtime/Launch/Resources/Version.h"
+#if ENGINE_MAJOR_VERSION > 5 || ENGINE_MINOR_VERSION >= 3
 #include "INotifyFieldValueChanged.h"
+#else
+#include "FieldNotification/IFieldValueChanged.h"
+#endif
 #include "MDFastBinding.h"
 #include "MDFastBindingFieldPath.h"
 
@@ -70,6 +75,7 @@ void UMDFastBindingDestination_Property::UpdateDestination_Internal(UObject* Sou
 
 		FMDFastBindingModule::SetPropertyInContainer(Property.Key, PropertyContainer, Value.Key, Value.Value);
 
+#if ENGINE_MAJOR_VERSION > 5 || ENGINE_MINOR_VERSION >= 3
 		if (bShouldBroadcastField)
 		{
 			if (INotifyFieldValueChanged* FieldNotify = Cast<INotifyFieldValueChanged>(GetUObjectPropertyOwner(SourceObject)))
@@ -77,6 +83,7 @@ void UMDFastBindingDestination_Property::UpdateDestination_Internal(UObject* Sou
 				FieldNotify->BroadcastFieldValueChanged(BoundFieldId);
 			}
 		}
+#endif
 
 		MarkAsHasEverUpdated();
 	}

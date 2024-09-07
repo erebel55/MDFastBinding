@@ -10,6 +10,7 @@
 #include "MDFastBindingObject.h"
 #include "UObject/Package.h"
 
+#if ENGINE_MAJOR_VERSION > 5 || ENGINE_MINOR_VERSION >= 3
 void UMDFastBindingGraph::AddNode(UEdGraphNode* NodeToAdd, bool bUserAction, bool bSelectNewNode)
 {
 	if (IsValid(NodeToAdd) && NodeToAdd->IsA<UMDFastBindingGraphNode>())
@@ -22,6 +23,7 @@ void UMDFastBindingGraph::AddNode(UEdGraphNode* NodeToAdd, bool bUserAction, boo
 		NodeToAdd->Rename(nullptr, GetTransientPackage());
 	}
 }
+#endif
 
 void UMDFastBindingGraph::SetGraphWidget(TSharedRef<SMDFastBindingEditorGraphWidget> InGraphWidget)
 {
