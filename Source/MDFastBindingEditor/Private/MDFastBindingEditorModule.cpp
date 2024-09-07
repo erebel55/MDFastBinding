@@ -1,4 +1,6 @@
-﻿#include "MDFastBindingEditorModule.h"
+﻿// Copyright Dylan Dumesnil. All Rights Reserved.
+
+#include "MDFastBindingEditorModule.h"
 
 #include "BlueprintEditorModule.h"
 #include "BlueprintEditorTabs.h"

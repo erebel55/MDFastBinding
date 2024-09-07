@@ -1,5 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
+﻿// Copyright Dylan Dumesnil. All Rights Reserved.
 
 #include "MDFastBindingHelpers.h"
 #include "UObject/UnrealType.h"

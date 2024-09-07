@@ -1,4 +1,6 @@
-﻿#include "BindingValues/MDFastBindingValue_CastObject.h"
+﻿// Copyright Dylan Dumesnil. All Rights Reserved.
+
+#include "BindingValues/MDFastBindingValue_CastObject.h"
 
 namespace MDFastBindingValue_CastObject_Private
 {

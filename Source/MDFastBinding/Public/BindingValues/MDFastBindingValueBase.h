@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿// Copyright Dylan Dumesnil. All Rights Reserved.
+
+#pragma once
 
 #include "MDFastBindingObject.h"
 #include "MDFastBindingValueBase.generated.h"

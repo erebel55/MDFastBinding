@@ -1,4 +1,6 @@
-﻿#include "PropertySetters/MDFastBindingPropertySetter_Objects.h"
+﻿// Copyright Dylan Dumesnil. All Rights Reserved.
+
+#include "PropertySetters/MDFastBindingPropertySetter_Objects.h"
 #include "UObject/Field.h"
 #include "UObject/UnrealType.h"
 

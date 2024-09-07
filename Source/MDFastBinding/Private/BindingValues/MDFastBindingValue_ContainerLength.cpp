@@ -1,4 +1,6 @@
-﻿#include "BindingValues/MDFastBindingValue_ContainerLength.h"
+﻿// Copyright Dylan Dumesnil. All Rights Reserved.
+
+#include "BindingValues/MDFastBindingValue_ContainerLength.h"
 
 #define LOCTEXT_NAMESPACE "MDFastBindingValue_ContainerLength"
 

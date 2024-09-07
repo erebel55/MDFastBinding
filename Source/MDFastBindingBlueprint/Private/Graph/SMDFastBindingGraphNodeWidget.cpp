@@ -1,4 +1,6 @@
-﻿#include "Graph/SMDFastBindingGraphNodeWidget.h"
+﻿// Copyright Dylan Dumesnil. All Rights Reserved.
+
+#include "Graph/SMDFastBindingGraphNodeWidget.h"
 
 #include "BlueprintEditor.h"
 #include "Debug/MDFastBindingEditorDebug.h"

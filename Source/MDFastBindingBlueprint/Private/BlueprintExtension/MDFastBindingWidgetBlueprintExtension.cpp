@@ -1,3 +1,5 @@
+// Copyright Dylan Dumesnil. All Rights Reserved.
+
 #include "BlueprintExtension/MDFastBindingWidgetBlueprintExtension.h"
 
 #include "Graph/MDFastBindingGraph.h"

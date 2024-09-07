@@ -1,4 +1,6 @@
-﻿#include "BindingDestinations/MDFastBindingDestinationBase.h"
+﻿// Copyright Dylan Dumesnil. All Rights Reserved.
+
+#include "BindingDestinations/MDFastBindingDestinationBase.h"
 
 #include "MDFastBindingInstance.h"
 #include "BindingValues/MDFastBindingValueBase.h"

@@ -1,4 +1,6 @@
-﻿#include "BindingValues/MDFastBindingValue_FormatText.h"
+﻿// Copyright Dylan Dumesnil. All Rights Reserved.
+
+#include "BindingValues/MDFastBindingValue_FormatText.h"
 
 #include "MDFastBinding.h"
 

@@ -1,4 +1,6 @@
-﻿#include "Graph/MDFastBindingGraphSchema.h"
+﻿// Copyright Dylan Dumesnil. All Rights Reserved.
+
+#include "Graph/MDFastBindingGraphSchema.h"
 
 #include "BlueprintConnectionDrawingPolicy.h"
 #include "Blueprint/WidgetBlueprintGeneratedClass.h"

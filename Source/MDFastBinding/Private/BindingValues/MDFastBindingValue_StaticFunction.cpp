@@ -1,4 +1,6 @@
-﻿#include "BindingValues/MDFastBindingValue_StaticFunction.h"
+﻿// Copyright Dylan Dumesnil. All Rights Reserved.
+
+#include "BindingValues/MDFastBindingValue_StaticFunction.h"
 
 #include "MDFastBindingHelpers.h"
 

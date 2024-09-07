@@ -1,3 +1,5 @@
+// Copyright Dylan Dumesnil. All Rights Reserved.
+
 #include "MDFastBinding.h"
 
 #include "Modules/ModuleManager.h"

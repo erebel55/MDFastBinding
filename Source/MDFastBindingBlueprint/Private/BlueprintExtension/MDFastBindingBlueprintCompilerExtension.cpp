@@ -1,3 +1,5 @@
+// Copyright Dylan Dumesnil. All Rights Reserved.
+
 #include "BlueprintExtension/MDFastBindingBlueprintCompilerExtension.h"
 
 #include "Blueprint/WidgetBlueprintGeneratedClass.h"

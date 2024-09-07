@@ -1,4 +1,6 @@
-﻿
+﻿// Copyright Dylan Dumesnil. All Rights Reserved.
+
+
 #pragma once
 
 #include "IPropertyTypeCustomization.h"

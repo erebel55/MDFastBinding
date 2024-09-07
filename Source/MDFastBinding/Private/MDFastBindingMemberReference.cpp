@@ -1,4 +1,6 @@
-﻿#include "MDFastBindingMemberReference.h"
+﻿// Copyright Dylan Dumesnil. All Rights Reserved.
+
+#include "MDFastBindingMemberReference.h"
 
 void FMDFastBindingMemberReference::FixUpReference(UClass& OwnerClass) const
 {

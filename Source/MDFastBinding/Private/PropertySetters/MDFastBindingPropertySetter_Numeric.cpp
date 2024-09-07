@@ -1,4 +1,6 @@
-﻿#include "PropertySetters/MDFastBindingPropertySetter_Numeric.h"
+﻿// Copyright Dylan Dumesnil. All Rights Reserved.
+
+#include "PropertySetters/MDFastBindingPropertySetter_Numeric.h"
 #include "UObject/UnrealType.h"
 
 

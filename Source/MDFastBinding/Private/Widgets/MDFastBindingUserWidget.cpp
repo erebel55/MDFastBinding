@@ -1,4 +1,6 @@
-﻿#include "Widgets/MDFastBindingUserWidget.h"
+﻿// Copyright Dylan Dumesnil. All Rights Reserved.
+
+#include "Widgets/MDFastBindingUserWidget.h"
 #include "MDFastBindingContainer.h"
 
 #if WITH_EDITOR

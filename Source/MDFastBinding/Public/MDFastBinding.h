@@ -1,3 +1,5 @@
+// Copyright Dylan Dumesnil. All Rights Reserved.
+
 #pragma once
 
 #include "Modules/ModuleInterface.h"

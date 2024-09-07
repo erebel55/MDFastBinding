@@ -1,4 +1,6 @@
-﻿#include "Graph/MDFastBindingEditorCommands.h"
+﻿// Copyright Dylan Dumesnil. All Rights Reserved.
+
+#include "Graph/MDFastBindingEditorCommands.h"
 
 
 #define LOCTEXT_NAMESPACE "MDFastBindingEditorCommands"

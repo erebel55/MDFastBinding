@@ -1,6 +1,9 @@
-﻿#include "Customizations/MDFastBindingFunctionWrapperCustomization.h"
+﻿// Copyright Dylan Dumesnil. All Rights Reserved.
+
+#include "Customizations/MDFastBindingFunctionWrapperCustomization.h"
 
 #include "DetailWidgetRow.h"
+#include "EdGraphSchema_K2.h"
 #include "Framework/MultiBox/MultiBoxBuilder.h"
 #include "MDFastBindingHelpers.h"
 #include "UObject/WeakFieldPtr.h"

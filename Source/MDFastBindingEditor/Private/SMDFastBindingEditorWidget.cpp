@@ -1,4 +1,6 @@
-﻿#include "SMDFastBindingEditorWidget.h"
+﻿// Copyright Dylan Dumesnil. All Rights Reserved.
+
+#include "SMDFastBindingEditorWidget.h"
 #include "BindingDestinations/MDFastBindingDestinationBase.h"
 #include "BlueprintExtension/MDFastBindingWidgetBlueprintExtension.h"
 #include "BlueprintEditor.h"
@@ -23,6 +25,7 @@
 #include "BlueprintEditorSettings.h"
 #include "Customizations/MDFastBindingFunctionWrapperCustomization.h"
 #include "Kismet2/BlueprintEditorUtils.h"
+#include "PropertyHandle.h"
 #include "Util/MDFastBindingEditorHelpers.h"
 #include "Widgets/Layout/SWidgetSwitcher.h"
 #include "Widgets/Input/SButton.h"

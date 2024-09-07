@@ -1,4 +1,6 @@
-﻿#include "Customizations/MDFastBindingObjectCustomization.h"
+﻿// Copyright Dylan Dumesnil. All Rights Reserved.
+
+#include "Customizations/MDFastBindingObjectCustomization.h"
 
 #include "DetailLayoutBuilder.h"
 #include "MDFastBindingObject.h"

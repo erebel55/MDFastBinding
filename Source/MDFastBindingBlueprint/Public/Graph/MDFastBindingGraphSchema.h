@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿// Copyright Dylan Dumesnil. All Rights Reserved.
+
+#pragma once
 
 #include "EdGraph/EdGraphSchema.h"
 #include "Templates/SubclassOf.h"

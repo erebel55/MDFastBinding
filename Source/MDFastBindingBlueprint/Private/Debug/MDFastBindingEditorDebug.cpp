@@ -1,3 +1,5 @@
+// Copyright Dylan Dumesnil. All Rights Reserved.
+
 #include "Debug/MDFastBindingEditorDebug.h"
 
 #include "BlueprintEditor.h"

@@ -1,4 +1,6 @@
-﻿#include "PropertySetters/IMDFastBindingPropertySetter.h"
+﻿// Copyright Dylan Dumesnil. All Rights Reserved.
+
+#include "PropertySetters/IMDFastBindingPropertySetter.h"
 
 #include "UObject/UnrealType.h"
 

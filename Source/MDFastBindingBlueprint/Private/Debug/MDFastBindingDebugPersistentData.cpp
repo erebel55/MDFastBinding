@@ -1,3 +1,5 @@
+// Copyright Dylan Dumesnil. All Rights Reserved.
+
 #include "Debug/MDFastBindingDebugPersistentData.h"
 
 bool UMDFastBindingDebugPersistentData::IsNodeBeingWatched(const FGuid& NodeId) const

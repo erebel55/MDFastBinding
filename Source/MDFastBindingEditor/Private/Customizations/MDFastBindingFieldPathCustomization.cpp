@@ -1,4 +1,6 @@
-﻿#include "Customizations/MDFastBindingFieldPathCustomization.h"
+﻿// Copyright Dylan Dumesnil. All Rights Reserved.
+
+#include "Customizations/MDFastBindingFieldPathCustomization.h"
 
 #include "DetailWidgetRow.h"
 #include "Framework/MultiBox/MultiBoxBuilder.h"

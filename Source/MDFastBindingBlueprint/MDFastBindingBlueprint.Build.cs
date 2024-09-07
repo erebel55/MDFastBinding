@@ -1,4 +1,6 @@
-﻿using UnrealBuildTool;
+﻿// Copyright Dylan Dumesnil. All Rights Reserved.
+
+using UnrealBuildTool;
 
 public class MDFastBindingBlueprint : ModuleRules
 {

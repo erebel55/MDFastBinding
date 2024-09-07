@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿// Copyright Dylan Dumesnil. All Rights Reserved.
+
+#pragma once
 
 #include "MDFastBindingValue_Property.h"
 #include "Runtime/Launch/Resources/Version.h"

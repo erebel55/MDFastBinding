@@ -1,4 +1,6 @@
-﻿#include "Graph/SMDFastBindingEditorGraphWidget.h"
+﻿// Copyright Dylan Dumesnil. All Rights Reserved.
+
+#include "Graph/SMDFastBindingEditorGraphWidget.h"
 
 #include "Algo/Transform.h"
 #include "BindingDestinations/MDFastBindingDestinationBase.h"

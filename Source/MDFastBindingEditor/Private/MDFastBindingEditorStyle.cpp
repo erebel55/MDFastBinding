@@ -1,4 +1,6 @@
-﻿#include "MDFastBindingEditorStyle.h"
+﻿// Copyright Dylan Dumesnil. All Rights Reserved.
+
+#include "MDFastBindingEditorStyle.h"
 
 #include "Interfaces/IPluginManager.h"
 #include "Styling/AppStyle.h"

@@ -1,4 +1,6 @@
-﻿#include "BindingValues/MDFastBindingValueBase.h"
+﻿// Copyright Dylan Dumesnil. All Rights Reserved.
+
+#include "BindingValues/MDFastBindingValueBase.h"
 
 #include "Misc/App.h"
 

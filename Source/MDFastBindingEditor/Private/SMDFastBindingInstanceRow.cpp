@@ -1,3 +1,5 @@
+// Copyright Dylan Dumesnil. All Rights Reserved.
+
 #include "SMDFastBindingInstanceRow.h"
 
 #include "MDFastBindingEditorStyle.h"
@@ -21,7 +23,7 @@ public:
 	void Construct(const FArguments& InArgs)
 	{
 		CachedBindingPtr = InArgs._BindingPtr;
-		
+
 		ChildSlot
 		[
 			SNew(SBox)
@@ -47,7 +49,7 @@ public:
 		{
 			const TSharedPtr<FMDFastBindingInstanceRowDragDropOp> BindingDragOp = MakeShareable(new FMDFastBindingInstanceRowDragDropOp(CachedBindingPtr));
 			BindingDragOp->Init();
-			
+
 			return FReply::Handled().BeginDragDrop(BindingDragOp.ToSharedRef());
 		}
 
@@ -125,7 +127,7 @@ int32 FMDFastBindingInstanceRowDragDropOp::CalculateDropResultIndex(EItemDropZon
 {
 	const int32 DropIndex = CalculateDropIndex(DropZone, TargetIndex);
 	int32 ResultIndex = INDEX_NONE;
-		
+
 	if (DraggedIndex > DropIndex)
 	{
 		ResultIndex = DropIndex;
@@ -142,7 +144,7 @@ void SMDFastBindingInstanceRow::Construct(const FArguments& InArgs, TSharedRef<S
 {
 	CachedEditorWidget = EditorWidget;
 	CachedBindingPtr = BindingPtr;
-	
+
 	if (UMDFastBindingInstance* Binding = BindingPtr.Get())
 	{
 		ChildSlot
@@ -316,7 +318,7 @@ FText SMDFastBindingInstanceRow::GetBindingPerformanceTooltip() const
 			return LOCTEXT("PerformantBindingTooltip", "This binding is evaluated every tick");
 		}
 	}
-	
+
 	return FText::GetEmpty();
 }
 
@@ -333,7 +335,7 @@ const FSlateBrush* SMDFastBindingInstanceRow::GetBindingPerformanceBrush() const
 			return FMDFastBindingEditorStyle::Get().GetBrush("Icon.Clock");
 		}
 	}
-	
+
 	return nullptr;
 }
 

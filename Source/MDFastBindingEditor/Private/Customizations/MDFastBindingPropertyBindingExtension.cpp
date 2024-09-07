@@ -1,3 +1,5 @@
+// Copyright Dylan Dumesnil. All Rights Reserved.
+
 #include "Customizations/MDFastBindingPropertyBindingExtension.h"
 
 #include "BindingDestinations/MDFastBindingDestination_Function.h"

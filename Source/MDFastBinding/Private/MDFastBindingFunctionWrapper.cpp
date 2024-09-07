@@ -1,4 +1,6 @@
-﻿#include "MDFastBindingFunctionWrapper.h"
+﻿// Copyright Dylan Dumesnil. All Rights Reserved.
+
+#include "MDFastBindingFunctionWrapper.h"
 
 #include "MDFastBindingHelpers.h"
 

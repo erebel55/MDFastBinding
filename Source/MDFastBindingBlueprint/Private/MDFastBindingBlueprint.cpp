@@ -1,4 +1,6 @@
-﻿#include "MDFastBindingBlueprint.h"
+﻿// Copyright Dylan Dumesnil. All Rights Reserved.
+
+#include "MDFastBindingBlueprint.h"
 
 #include "BlueprintCompilationManager.h"
 #include "WidgetBlueprint.h"

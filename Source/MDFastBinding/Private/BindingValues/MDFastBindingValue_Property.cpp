@@ -1,4 +1,6 @@
-﻿#include "BindingValues/MDFastBindingValue_Property.h"
+﻿// Copyright Dylan Dumesnil. All Rights Reserved.
+
+#include "BindingValues/MDFastBindingValue_Property.h"
 
 #include "MDFastBindingFieldPath.h"
 

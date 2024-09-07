@@ -1,3 +1,5 @@
+// Copyright Dylan Dumesnil. All Rights Reserved.
+
 #include "PropertySetters/MDFastBindingPropertySetter_Colors.h"
 #include "Styling/SlateColor.h"
 #include "UObject/Class.h"

@@ -1,4 +1,6 @@
-﻿#include "Graph/MDFastBindingGraphNode.h"
+﻿// Copyright Dylan Dumesnil. All Rights Reserved.
+
+#include "Graph/MDFastBindingGraphNode.h"
 
 #include "BindingDestinations/MDFastBindingDestinationBase.h"
 #include "BindingDestinations/MDFastBindingDestination_Function.h"

@@ -1,3 +1,5 @@
+// Copyright Dylan Dumesnil. All Rights Reserved.
+
 #include "Graph/MDFastBindingConnectionDrawingPolicy.h"
 
 #include "BindingDestinations/MDFastBindingDestinationBase.h"

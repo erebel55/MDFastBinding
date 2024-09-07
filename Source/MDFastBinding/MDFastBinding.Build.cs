@@ -1,3 +1,5 @@
+// Copyright Dylan Dumesnil. All Rights Reserved.
+
 using UnrealBuildTool;
 
 public class MDFastBinding : ModuleRules

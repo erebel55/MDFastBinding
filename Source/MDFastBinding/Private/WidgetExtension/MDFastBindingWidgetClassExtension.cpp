@@ -1,3 +1,5 @@
+// Copyright Dylan Dumesnil. All Rights Reserved.
+
 #include "WidgetExtension/MDFastBindingWidgetClassExtension.h"
 
 #include "Blueprint/UserWidget.h"

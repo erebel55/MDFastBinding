@@ -1,3 +1,5 @@
+// Copyright Dylan Dumesnil. All Rights Reserved.
+
 #include "Util/MDFastBindingEditorHelpers.h"
 
 #include "BlueprintExtension/MDFastBindingWidgetBlueprintExtension.h"

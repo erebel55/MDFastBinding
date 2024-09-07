@@ -1,4 +1,6 @@
-﻿
+﻿// Copyright Dylan Dumesnil. All Rights Reserved.
+
+
 #include "BindingValues/MDFastBindingValue_Select.h"
 
 #include "MDFastBindingHelpers.h"

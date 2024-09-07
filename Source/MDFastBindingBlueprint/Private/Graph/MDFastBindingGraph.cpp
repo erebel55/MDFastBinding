@@ -1,4 +1,6 @@
-﻿#include "Graph/MDFastBindingGraph.h"
+﻿// Copyright Dylan Dumesnil. All Rights Reserved.
+
+#include "Graph/MDFastBindingGraph.h"
 
 #include "BindingValues/MDFastBindingValueBase.h"
 #include "EdGraph/EdGraphPin.h"
