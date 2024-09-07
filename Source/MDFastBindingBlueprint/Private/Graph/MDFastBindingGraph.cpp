@@ -8,12 +8,18 @@
 #include "Graph/SMDFastBindingEditorGraphWidget.h"
 #include "MDFastBindingInstance.h"
 #include "MDFastBindingObject.h"
+#include "UObject/Package.h"
 
 void UMDFastBindingGraph::AddNode(UEdGraphNode* NodeToAdd, bool bUserAction, bool bSelectNewNode)
 {
 	if (IsValid(NodeToAdd) && NodeToAdd->IsA<UMDFastBindingGraphNode>())
 	{
 		Super::AddNode(NodeToAdd, bUserAction, bSelectNewNode);
+	}
+	else if (IsValid(NodeToAdd))
+	{
+		// Move the node out of our graph ownership chain
+		NodeToAdd->Rename(nullptr, GetTransientPackage());
 	}
 }
 

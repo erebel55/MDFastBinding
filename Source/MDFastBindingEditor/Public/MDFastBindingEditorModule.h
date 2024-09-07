@@ -50,7 +50,8 @@ private:
 
 	TSharedPtr<FMDFastBindingEditorTabBinding> TabBinding;
 
-	FDelegateHandle RenameHandle;
+	FDelegateHandle RenameVarHandle;
+	FDelegateHandle RenameFuncHandle;
 
 	TSharedPtr<class IDesignerExtensionFactory> DesignerExtensionFactory;
 	TSharedPtr<class FMDFastBindingPropertyBindingExtension> PropertyBindingExtension;

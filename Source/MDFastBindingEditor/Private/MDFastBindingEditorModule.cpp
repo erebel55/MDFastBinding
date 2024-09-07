@@ -2,32 +2,33 @@
 
 #include "BlueprintEditorModule.h"
 #include "BlueprintEditorTabs.h"
+#include "BlueprintModes/WidgetBlueprintApplicationMode.h"
 #include "Customizations/MDFastBindingFieldPathCustomization.h"
 #include "Customizations/MDFastBindingFunctionWrapperCustomization.h"
 #include "Customizations/MDFastBindingObjectCustomization.h"
 #include "Customizations/MDFastBindingPropertyBindingExtension.h"
+#include "Framework/Application/SlateApplication.h"
+#include "Framework/Docking/LayoutExtender.h"
+#include "Framework/MultiBox/MultiBoxBuilder.h"
+#include "Kismet2/BlueprintEditorUtils.h"
 #include "LevelEditor.h"
 #include "MDFastBindingContainer.h"
 #include "MDFastBindingDesignerExtension.h"
-#include "Util/MDFastBindingEditorConfig.h"
 #include "MDFastBindingEditorStyle.h"
 #include "MDFastBindingFieldPath.h"
 #include "MDFastBindingFunctionWrapper.h"
 #include "MDFastBindingInstance.h"
 #include "MDFastBindingObject.h"
-#include "SMDFastBindingEditorWidget.h"
+#include "Misc/EngineVersionComparison.h"
+#include "Modules/ModuleManager.h"
 #include "PropertyEditorDelegates.h"
 #include "PropertyEditorModule.h"
+#include "SMDFastBindingEditorWidget.h"
 #include "UMGEditorModule.h"
-#include "Framework/Docking/LayoutExtender.h"
-#include "Framework/MultiBox/MultiBoxBuilder.h"
-#include "Kismet2/BlueprintEditorUtils.h"
-#include "Modules/ModuleManager.h"
+#include "Util/MDFastBindingEditorConfig.h"
+#include "Util/MDFastBindingEditorHelpers.h"
 #include "WidgetBlueprint.h"
 #include "WidgetDrawerConfig.h"
-#include "BlueprintModes/WidgetBlueprintApplicationMode.h"
-#include "Framework/Application/SlateApplication.h"
-#include "Util/MDFastBindingEditorHelpers.h"
 #include "Widgets/Docking/SDockTab.h"
 #include "WorkflowOrientedApp/WorkflowTabManager.h"
 
@@ -81,12 +82,18 @@ void FMDFastBindingEditorModule::StartupModule()
 	PropertyBindingExtension = MakeShared<FMDFastBindingPropertyBindingExtension>();
 	UMGEditorInterface.GetPropertyBindingExtensibilityManager()->AddExtension(PropertyBindingExtension.ToSharedRef());
 
-	RenameHandle = FBlueprintEditorUtils::OnRenameVariableReferencesEvent.AddRaw(this, &FMDFastBindingEditorModule::OnRenameVariable);
+	RenameVarHandle = FBlueprintEditorUtils::OnRenameVariableReferencesEvent.AddRaw(this, &FMDFastBindingEditorModule::OnRenameVariable);
+#if !UE_VERSION_OLDER_THAN(5, 4, 0)
+	RenameFuncHandle = FBlueprintEditorUtils::OnRenameFunctionReferencesEvent.AddRaw(this, &FMDFastBindingEditorModule::OnRenameVariable);
+#endif
 }
 
 void FMDFastBindingEditorModule::ShutdownModule()
 {
-	FBlueprintEditorUtils::OnRenameVariableReferencesEvent.Remove(RenameHandle);
+	FBlueprintEditorUtils::OnRenameVariableReferencesEvent.Remove(RenameVarHandle);
+#if !UE_VERSION_OLDER_THAN(5, 4, 0)
+	FBlueprintEditorUtils::OnRenameFunctionReferencesEvent.Remove(RenameFuncHandle);
+#endif
 
 	if (FPropertyEditorModule* PropertyModule = FModuleManager::GetModulePtr<FPropertyEditorModule>("PropertyEditor"))
 	{
@@ -195,7 +202,7 @@ void FMDFastBindingEditorModule::OnRenameVariable(UBlueprint* Blueprint, UClass*
 {
 	if (Blueprint != nullptr && MDFastBindingEditorHelpers::DoesClassSupportFastBindings(Blueprint->GeneratedClass))
 	{
-		if (const UMDFastBindingContainer* BindingContainer = MDFastBindingEditorHelpers::FindBindingContainerCDOInClass(Blueprint->GeneratedClass))
+		if (const UMDFastBindingContainer* BindingContainer = MDFastBindingEditorHelpers::FindBindingContainerCDOInBlueprint(Blueprint))
 		{
 			for (UMDFastBindingInstance* Binding : BindingContainer->GetBindings())
 			{
