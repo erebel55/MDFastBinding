@@ -17,6 +17,8 @@ class MDFASTBINDINGBLUEPRINT_API UMDFastBindingGraph : public UEdGraph
 	GENERATED_BODY()
 
 public:
+	virtual void AddNode(UEdGraphNode* NodeToAdd, bool bUserAction, bool bSelectNewNode) override;
+
 	void SetGraphWidget(TSharedRef<SMDFastBindingEditorGraphWidget> InGraphWidget);
 
 	void RefreshGraph();

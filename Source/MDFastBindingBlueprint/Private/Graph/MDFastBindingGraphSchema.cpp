@@ -582,6 +582,16 @@ void UMDFastBindingGraphSchema::GetGraphDisplayInformation(const UEdGraph& Graph
 	}
 }
 
+void UMDFastBindingGraphSchema::SetNodePosition(UEdGraphNode* Node, const FVector2D& Position) const
+{
+	Super::SetNodePosition(Node, Position);
+
+	if (UMDFastBindingGraphNode* BindingNode = Cast<UMDFastBindingGraphNode>(Node))
+	{
+		BindingNode->OnMoved();
+	}
+}
+
 void UMDFastBindingGraphSchema::TrySetDefaultValue(UEdGraphPin& Pin, const FString& NewDefaultValue, bool bMarkAsModified) const
 {
 	// If setting an AutoCreateRefTerm pin, just defer to the node

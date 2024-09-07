@@ -9,6 +9,14 @@
 #include "MDFastBindingInstance.h"
 #include "MDFastBindingObject.h"
 
+void UMDFastBindingGraph::AddNode(UEdGraphNode* NodeToAdd, bool bUserAction, bool bSelectNewNode)
+{
+	if (IsValid(NodeToAdd) && NodeToAdd->IsA<UMDFastBindingGraphNode>())
+	{
+		Super::AddNode(NodeToAdd, bUserAction, bSelectNewNode);
+	}
+}
+
 void UMDFastBindingGraph::SetGraphWidget(TSharedRef<SMDFastBindingEditorGraphWidget> InGraphWidget)
 {
 	GraphWidget = InGraphWidget;
