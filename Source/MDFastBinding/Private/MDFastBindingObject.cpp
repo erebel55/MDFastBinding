@@ -419,7 +419,7 @@ FMDFastBindingItem& UMDFastBindingObject::EnsureBindingItemExists(const FName& I
 		BindingItems.Add(MoveTemp(Item));
 		BindingItem = BindingItems.FindByKey(ItemName);
 	}
-	else if (BindingItem->HasDefaultValue() && BindingItem->ItemProperty.Get() != ItemProperty)
+	else if (BindingItem->HasDefaultValue() && BindingItem->ItemProperty.IsValid() && BindingItem->ItemProperty.Get() != ItemProperty)
 	{
 		// Clear defaults when the item property changed
 		BindingItem->ClearDefaultValues();
